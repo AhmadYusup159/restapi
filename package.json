@@ -1,0 +1,23 @@
+{
+  "name": "restapi",
+  "version": "1.0.0",
+  "description": "api presensi msib",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yusup159/restapi.git"
+  },
+  "keywords": [
+    "rest",
+    "api"
+  ],
+  "author": "Ahmad Yusup",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/yusup159/restapi/issues"
+  },
+  "homepage": "https://github.com/yusup159/restapi#readme"
+}

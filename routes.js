@@ -5,4 +5,10 @@ module.exports = function(app){
 
     app.route('/')
     .get(json.index);
+
+    app.route('/tampilsemuadatamahasiswa')
+    .get(json.getalldatamahasiswa);
+
+    app.route('/tampildatamahasiswabyid/:id')
+    .get(json.getdatamahasiswabyid);
 }

@@ -1,13 +1,14 @@
 var mysql = require ('mysql');
 
 //connection
-const conn= mysql.createConnection({
+const connection= mysql.createConnection({
     host :'localhost',
     user :'root',
     password: '',
     database:'restapi'
 });
-conn.connect((err) =>{
+connection.connect((err) =>{
     if(err) throw err;
     console.log('Mysql Terkoneksi');
 });
+module.exports = connection;

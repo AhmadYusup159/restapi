@@ -1,0 +1,8 @@
+'use strict';
+
+var respose = require('./res');
+var connection = require('./koneksi');
+
+exports.index = function(req,res){
+    response.ok("API Berjalan")
+};

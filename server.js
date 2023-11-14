@@ -5,6 +5,11 @@ const app =express();
 //json
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
+
+// call routes
+var routes = require('./routes');
+routes(app);
+
  app.listen(3000, () =>{
-console.log("Server Berjalan")
+console.log('Server Berjalan');
  });

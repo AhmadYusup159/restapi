@@ -14,4 +14,6 @@ module.exports = function(app){
 
     app.route('/tambahmahasiswa')
     .post(json.tambahdatamahasiswa);
+    app.route('/ubahdatamahasiswa/:id')
+    .put(json.ubahdatamahasiswa);
 }

@@ -11,14 +11,12 @@ module.exports = function(app){
 
     app.route('/tampilsemuadatamahasiswa')
     .get(json.getalldatamahasiswa);
-
     app.route('/tampildatamahasiswabyid/:id')
     .get(json.getdatamahasiswabyid);
-
     app.route('/tambahmahasiswa')
     .post(upload.single('foto'), json.tambahdatamahasiswa);
     app.route('/ubahdatamahasiswa/:id')
-    .put(json.ubahdatamahasiswa);
+    .put(upload.single('foto'), json.ubahdatamahasiswa);
     app.route('/hapusdatamahasiswa/:id')
     .delete(json.hapusdatamahasiswa);
 }

@@ -1,7 +1,10 @@
 'use strict'
 
+const { upload } = require('./midleware');
+
 module.exports = function(app){
     var json = require('./controller');
+    
 
     app.route('/')
     .get(json.index);
@@ -13,7 +16,9 @@ module.exports = function(app){
     .get(json.getdatamahasiswabyid);
 
     app.route('/tambahmahasiswa')
-    .post(json.tambahdatamahasiswa);
+    .post(upload.single('foto'), json.tambahdatamahasiswa);
     app.route('/ubahdatamahasiswa/:id')
     .put(json.ubahdatamahasiswa);
+    app.route('/hapusdatamahasiswa/:id')
+    .delete(json.hapusdatamahasiswa);
 }

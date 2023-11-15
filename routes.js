@@ -25,4 +25,10 @@ module.exports = function(app){
     .get(json.getalldataadmin);
     app.route('/tampiladminbyid/:id')
     .get(json.getadminbyid);
+    app.route('/tambahdataadmin')
+    .post(upload.single('foto'), json.tambahdataadmin);
+    app.route('/ubahdataadmin/:id')
+    .put(upload.single('foto'), json.ubahdataadmin);
+    app.route('/hapusdataadmin/:id')
+    .delete(json.hapusdatamaadmin);
 }

@@ -35,6 +35,8 @@ exports.tambahdatamahasiswa = function(req, res){
     var alamat = req.body.alamat;
     var foto = req.file.filename; 
     var status = req.body.status;
+    var notlp = req.body.notlp;
+    var email = req.body.email;
     var password = req.body.password;
 
     if (!npm ) {
@@ -55,6 +57,16 @@ exports.tambahdatamahasiswa = function(req, res){
     
     if (!status || (status !== 'Aktif' && status !== 'Tidak Aktif')) {
         return res.status(400).json({ error: "Status harus diisi dengan 'Aktif' atau 'Tidak Aktif'." });
+    }
+    if (!notlp ) {
+        return res.status(400).json({ error: "No Telepon harus diisi." });
+    }
+    if (!email) {
+        return res.status(400).json({ error: "Email harus diisi." });
+    }
+    var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        return res.status(400).json({ error: "Format email tidak valid." });
     }    
     if (!password) {
         return res.status(400).json({ error: "Password harus diisi." });
@@ -77,7 +89,7 @@ exports.tambahdatamahasiswa = function(req, res){
         if (result.length > 0) {
             return res.status(400).json({ error: "NPM sudah terdaftar." });
         } else {
-            connection.query('INSERT INTO mahasiswa (npm, nama_mahasiswa, jk, alamat,foto,status, password) VALUES (?, ?, ?, ?, ?, ?, ?)', [npm, nama_mahasiswa, jk, alamat, foto, status, password], function(error, rows, fields){
+            connection.query('INSERT INTO mahasiswa (npm, nama_mahasiswa, jk, alamat, foto, status, notlp, email, password) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)', [npm, nama_mahasiswa, jk, alamat, foto, status, notlp, email, password], function(error, rows, fields){
                 if(error){
                     console.log(error);
                     return res.status(500).json({ error: "Gagal menambahkan data ke database." });
@@ -96,6 +108,8 @@ exports.ubahdatamahasiswa = function (req, res) {
     var alamat = req.body.alamat;
     var foto = req.file.filename; 
     var status = req.body.status;
+    var notlp = req.body.notlp;
+    var email = req.body.email;
     var password = req.body.password;
     
     if (!npm ) {
@@ -116,7 +130,17 @@ exports.ubahdatamahasiswa = function (req, res) {
     
     if (!status || (status !== 'Aktif' && status !== 'Tidak Aktif')) {
         return res.status(400).json({ error: "Status harus diisi dengan 'Aktif' atau 'Tidak Aktif'." });
-    }    
+    }
+    if (!notlp ) {
+        return res.status(400).json({ error: "No Telepon harus diisi." });
+    }
+    if (!email) {
+        return res.status(400).json({ error: "Email harus diisi." });
+    }
+    var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        return res.status(400).json({ error: "Format email tidak valid." });
+    }     
     if (!password) {
         return res.status(400).json({ error: "Password harus diisi." });
     }
@@ -138,7 +162,7 @@ exports.ubahdatamahasiswa = function (req, res) {
         if (result.length > 0) {
             return res.status(400).json({ error: "NPM sudah terdaftar." });
         } else {
-            connection.query('UPDATE mahasiswa SET npm=?, nama_mahasiswa=?, jk=?, alamat=?, foto=?, status=?, password=? WHERE id=?', [npm, nama_mahasiswa, jk, alamat, foto, status, password, id], function(error, rows, fields){
+            connection.query('UPDATE mahasiswa SET npm=?, nama_mahasiswa=?, jk=?, alamat=?, foto=?, status=?, notlp=?, email=?, password=? WHERE id=?', [npm, nama_mahasiswa, jk, alamat, foto, status, notlp,email, password, id], function(error, rows, fields){
                 if(error){
                     console.log(error);
                     return res.status(500).json({ error: "Gagal mengubah data di database." });
@@ -182,4 +206,111 @@ exports.getadminbyid = function(req, res) {
         }
     });
 };
+exports.tambahdataadmin = function(req, res){
+    var nama_admin = req.body.nama_admin;
+    var username = req.body.username;
+    var password = req.body.password;
+    var status = req.body.status;
+    var foto = req.file.filename; 
+    
 
+  
+    if (!nama_admin) {
+        return res.status(400).json({ error: "Nama harus diisi." });
+    }   
+    if (!username) {
+        return res.status(400).json({ error: "Username harus diisi." });
+    }
+    if (!password) {
+        return res.status(400).json({ error: "Password harus diisi." });
+    }
+    if (!status || (status !== 'Aktif' && status !== 'Tidak Aktif')) {
+        return res.status(400).json({ error: "Status harus diisi dengan 'Aktif' atau 'Tidak Aktif'." });
+    }
+    if (!req.file) {
+        return res.status(400).json({ error: "Foto harus diunggah." });
+    }
+    if (typeof nama_admin !== 'string') {
+        return res.status(400).json({ error: "Nama harus berupa string." });
+    }
+
+    connection.query('SELECT * FROM admin WHERE username = ?', [username], function(error, result, fields){
+        if (error) {
+            console.log(error);
+            return res.status(500).json({ error: "Gagal memeriksa Username di database." });
+        }
+
+        if (result.length > 0) {
+            return res.status(400).json({ error: "Username sudah terdaftar." });
+        } else {
+            connection.query('INSERT INTO admin (nama_admin, username, password, status, foto) VALUES (?, ?, ?, ?, ?)', [nama_admin, username, password, status, foto], function(error, rows, fields){
+                if(error){
+                    console.log(error);
+                    return res.status(500).json({ error: "Gagal menambahkan data ke database." });
+                } else {
+                    return res.status(200).json({ message: "Berhasil Menambahkan data." });
+                }
+            });
+        }
+    });
+};
+    exports.ubahdataadmin = function(req,res){
+        let id = req.params.id;
+        var nama_admin = req.body.nama_admin;
+        var username = req.body.username;
+        var password = req.body.password;
+        var status = req.body.status;
+        var foto = req.file.filename; 
+        
+
+    
+        if (!nama_admin) {
+            return res.status(400).json({ error: "Nama harus diisi." });
+        }   
+        if (!username) {
+            return res.status(400).json({ error: "Username harus diisi." });
+        }
+        if (!password) {
+            return res.status(400).json({ error: "Password harus diisi." });
+        }
+        if (!status || (status !== 'Aktif' && status !== 'Tidak Aktif')) {
+            return res.status(400).json({ error: "Status harus diisi dengan 'Aktif' atau 'Tidak Aktif'." });
+        }
+        if (!req.file) {
+            return res.status(400).json({ error: "Foto harus diunggah." });
+        }
+        if (typeof nama_admin !== 'string') {
+            return res.status(400).json({ error: "Nama harus berupa string." });
+        }
+
+        connection.query('SELECT * FROM admin WHERE username = ?', [username], function(error, result, fields){
+            if (error) {
+                console.log(error);
+                return res.status(500).json({ error: "Gagal memeriksa Username di database." });
+            }
+
+            if (result.length > 0) {
+                return res.status(400).json({ error: "Username sudah terdaftar." });
+            } else {
+                connection.query('UPDATE admin SET nama_admin=?, username=?, password=?, status=?, foto=? WHERE id=?', [nama_admin, username, password, status, foto, id], function(error, rows, fields){
+                    if(error){
+                        console.log(error);
+                        return res.status(500).json({ error: "Gagal menambahkan data ke database." });
+                    } else {
+                        return res.status(200).json({ message: "Berhasil Mengubah data." });
+                    }
+                });
+            }
+        });
+};
+exports.hapusdatamaadmin = function (req, res) {
+    let id = req.params.id;
+    connection.query('DELETE FROM admin WHERE id=?',[id],function(error, rows, fields) {
+        if (error) {
+            console.log(error);  
+           return res.status(500).json({ error: "data dengan ID id tidak ditemukan" });
+        } else {
+            response.ok("Data Berhasil Dihapus", res);
+        }
+    });
+}

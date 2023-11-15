@@ -8,7 +8,7 @@ module.exports = function(app){
 
     app.route('/')
     .get(json.index);
-
+//Mahasiswa
     app.route('/tampilsemuadatamahasiswa')
     .get(json.getalldatamahasiswa);
     app.route('/tampildatamahasiswabyid/:id')
@@ -19,4 +19,10 @@ module.exports = function(app){
     .put(upload.single('foto'), json.ubahdatamahasiswa);
     app.route('/hapusdatamahasiswa/:id')
     .delete(json.hapusdatamahasiswa);
+
+//Admin
+    app.route('/tampilsemuaadmin')
+    .get(json.getalldataadmin);
+    app.route('/tampiladminbyid/:id')
+    .get(json.getadminbyid);
 }

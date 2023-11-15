@@ -6,8 +6,7 @@ var connection = require('./koneksi');
 exports.index = function(req,res){
     response.ok("API Berjalan",res)
 };
-
-
+//Mahasiswa
 exports.getalldatamahasiswa = function(req, res) {
     
     connection.query('SELECT * FROM mahasiswa', function(error, rows, fields) {
@@ -150,8 +149,6 @@ exports.ubahdatamahasiswa = function (req, res) {
         }
     });
 };
-
-
 exports.hapusdatamahasiswa = function (req, res) {
     let id = req.params.id;
     connection.query('DELETE FROM mahasiswa WHERE id=?',[id],function(error, rows, fields) {
@@ -163,4 +160,26 @@ exports.hapusdatamahasiswa = function (req, res) {
         }
     });
 }
+//Admin
+exports.getalldataadmin = function(req, res) {
+    
+    connection.query('SELECT * FROM admin', function(error, rows, fields) {
+        if (error) {
+            console.log(error);  
+        } else {
+            response.ok(rows, res);
+        }
+    });
+};
+exports.getadminbyid = function(req, res) {
+    let id = req.params.id;
+    connection.query('SELECT * FROM admin where id = ?',[id], function(error, rows, fields) {
+        if (error) {
+            console.log(error);  
+           return res.status(500).json({ error: "data dengan ID id tidak ditemukan" });
+        } else {
+            response.ok(rows, res);
+        }
+    });
+};
 

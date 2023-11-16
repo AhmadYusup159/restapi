@@ -184,6 +184,7 @@ exports.hapusdatamahasiswa = function (req, res) {
         }
     });
 }
+
 //Admin
 exports.getalldataadmin = function(req, res) {
     
@@ -314,3 +315,186 @@ exports.hapusdatamaadmin = function (req, res) {
         }
     });
 }
+//Dosen
+exports.getalldatadosen = function(req, res) {
+    
+    connection.query('SELECT * FROM dosen', function(error, rows, fields) {
+        if (error) {
+            console.log(error);  
+        } else {
+            response.ok(rows, res);
+        }
+    });
+};
+exports.getdatadosenbyid = function(req, res) {
+    let id = req.params.id;
+    connection.query('SELECT * FROM dosen where id = ?',[id], function(error, rows, fields) {
+        if (error) {
+            console.log(error);  
+           return res.status(500).json({ error: "data dengan ID id tidak ditemukan" });
+        } else {
+            response.ok(rows, res);
+        }
+    });
+};
+exports.tambahdatadosen = function(req, res){
+    var nip = req.body.nip;
+    var nama_dosen = req.body.nama_dosen;
+    var jk = req.body.jk;
+    var alamat = req.body.alamat;
+    var foto = req.file.filename; 
+    var status = req.body.status;
+    var notlp = req.body.notlp;
+    var email = req.body.email;
+    var password = req.body.password;
+
+    if (!nip ) {
+        return res.status(400).json({ error: "NIP harus diisi." });
+    }
+    if (!nama_dosen) {
+        return res.status(400).json({ error: "Nama harus diisi." });
+    }
+    if (!jk || (jk !== 'Laki-laki' && jk !== 'Perempuan')) {
+        return res.status(400).json({ error: "Jenis Kelamin harus diisi dengan 'Laki-laki' atau 'Perempuan'." });
+    }    
+    if (!alamat) {
+        return res.status(400).json({ error: "Alamat harus diisi." });
+    }
+    if (!req.file) {
+        return res.status(400).json({ error: "Foto harus diunggah." });
+    }
+    
+    if (!status || (status !== 'Aktif' && status !== 'Tidak Aktif')) {
+        return res.status(400).json({ error: "Status harus diisi dengan 'Aktif' atau 'Tidak Aktif'." });
+    }
+    if (!notlp ) {
+        return res.status(400).json({ error: "No Telepon harus diisi." });
+    }
+    if (!email) {
+        return res.status(400).json({ error: "Email harus diisi." });
+    }
+    var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        return res.status(400).json({ error: "Format email tidak valid." });
+    }    
+    if (!password) {
+        return res.status(400).json({ error: "Password harus diisi." });
+    }
+
+    if (!nip || nip.length !== 16) {
+        return res.status(400).json({ error: "NPM harus terdiri dari 16 karakter." });
+    }    
+
+    if (typeof nama_dosen !== 'string') {
+        return res.status(400).json({ error: "Nama harus berupa string." });
+    }
+
+    connection.query('SELECT * FROM dosen WHERE nip = ?', [nip], function(error, result, fields){
+        if (error) {
+            console.log(error);
+            return res.status(500).json({ error: "Gagal memeriksa NIP di database." });
+        }
+
+        if (result.length > 0) {
+            return res.status(400).json({ error: "NIP sudah terdaftar." });
+        } else {
+            connection.query('INSERT INTO dosen (nip, nama_dosen, jk, alamat, foto, status, notlp, email, password) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)', [nip, nama_dosen, jk, alamat, foto, status, notlp, email, password], function(error, rows, fields){
+                if(error){
+                    console.log(error);
+                    return res.status(500).json({ error: "Gagal menambahkan data ke database." });
+                } else {
+                    return res.status(200).json({ message: "Berhasil Menambahkan data." });
+                }
+            });
+        }
+    });
+};
+exports.ubahdatadosen = function (req, res) {
+    let id = req.params.id;
+    var nip = req.body.nip;
+    var nama_dosen = req.body.nama_dosen;
+    var jk = req.body.jk;
+    var alamat = req.body.alamat;
+    var foto = req.file.filename; 
+    var status = req.body.status;
+    var notlp = req.body.notlp;
+    var email = req.body.email;
+    var password = req.body.password;
+
+    if (!nip ) {
+        return res.status(400).json({ error: "NIP harus diisi." });
+    }
+    if (!nama_dosen) {
+        return res.status(400).json({ error: "Nama harus diisi." });
+    }
+    if (!jk || (jk !== 'Laki-laki' && jk !== 'Perempuan')) {
+        return res.status(400).json({ error: "Jenis Kelamin harus diisi dengan 'Laki-laki' atau 'Perempuan'." });
+    }    
+    if (!alamat) {
+        return res.status(400).json({ error: "Alamat harus diisi." });
+    }
+    if (!req.file) {
+        return res.status(400).json({ error: "Foto harus diunggah." });
+    }
+    
+    if (!status || (status !== 'Aktif' && status !== 'Tidak Aktif')) {
+        return res.status(400).json({ error: "Status harus diisi dengan 'Aktif' atau 'Tidak Aktif'." });
+    }
+    if (!notlp ) {
+        return res.status(400).json({ error: "No Telepon harus diisi." });
+    }
+    if (!email) {
+        return res.status(400).json({ error: "Email harus diisi." });
+    }
+    var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        return res.status(400).json({ error: "Format email tidak valid." });
+    }    
+    if (!password) {
+        return res.status(400).json({ error: "Password harus diisi." });
+    }
+
+    if (!nip || nip.length !== 16) {
+        return res.status(400).json({ error: "NPM harus terdiri dari 16 karakter." });
+    }    
+
+    if (typeof nama_dosen !== 'string') {
+        return res.status(400).json({ error: "Nama harus berupa string." });
+    }
+
+    connection.query('SELECT * FROM dosen WHERE nip = ?', [nip], function(error, result, fields){
+        if (error) {
+            console.log(error);
+            return res.status(500).json({ error: "Gagal memeriksa NIP di database." });
+        }
+
+        if (result.length > 0) {
+            return res.status(400).json({ error: "NIP sudah terdaftar." });
+        } else {
+            connection.query('UPDATE dosen SET nip=?, nama_dosen=?, jk=?, alamat=?, foto=?, status=?, notlp=?, email=?, password=? WHERE id=?', [nip, nama_dosen, jk, alamat, foto, status, notlp, email, password, id], function(error, rows, fields){
+                if(error){
+                    console.log(error);
+                    return res.status(500).json({ error: "Gagal Mengubah data ke database." });
+                } else {
+                    return res.status(200).json({ message: "Berhasil Mengubah data." });
+                }
+            });
+        }
+    });
+};
+exports.hapusdatadosen = function (req, res) {
+    let id = req.params.id;
+    connection.query('DELETE FROM dosen WHERE id=?',[id],function(error, rows, fields) {
+        if (error) {
+            console.log(error);  
+           return res.status(500).json({ error: "data dengan ID id tidak ditemukan" });
+        } else {
+            response.ok("Data Berhasil Dihapus", res);
+        }
+    });
+}
+//Matakuliah
+//Ruangan
+//Kelas
+//Jadwal
+//Presensi

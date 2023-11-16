@@ -5,7 +5,7 @@ const storage = multer.diskStorage({
     cb(null, './foto_mahasiswa');
   },
   filename: function (req, file, cb) {
-    cb(null, file.originalname); // Nama file disimpan sama dengan nama aslinya
+    cb(null, file.originalname); 
   },
 });
 

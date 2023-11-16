@@ -1,6 +1,8 @@
 'use strict'
 
-const { upload } = require('./midleware');
+const { upload } = require('./uploadfotomahasiswa');
+const { uploadAdmin } = require('./uploadfotoadmin');
+const { uploadDosen } = require('./uploadfotodosen');
 
 module.exports = function(app){
     var json = require('./controller');
@@ -26,9 +28,25 @@ module.exports = function(app){
     app.route('/tampiladminbyid/:id')
     .get(json.getadminbyid);
     app.route('/tambahdataadmin')
-    .post(upload.single('foto'), json.tambahdataadmin);
+    .post(uploadAdmin.single('foto'), json.tambahdataadmin);
     app.route('/ubahdataadmin/:id')
-    .put(upload.single('foto'), json.ubahdataadmin);
+    .put(uploadAdmin.single('foto'), json.ubahdataadmin);
     app.route('/hapusdataadmin/:id')
     .delete(json.hapusdatamaadmin);
+//Dosen
+    app.route('/tampilsemuadosen')
+    .get(json.getalldatadosen);
+    app.route('/tampildosenbyid/:id')
+    .get(json.getdatadosenbyid);
+    app.route('/tambahdatadosen')
+    .post(uploadDosen.single('foto'), json.tambahdatadosen);
+    app.route('/ubahdatadosen/:id')
+    .put(uploadDosen.single('foto'), json.ubahdatadosen);
+    app.route('/hapusdatadosen/:id')
+    .delete(json.hapusdatadosen);
+//Matakuliah
+//Ruangan
+//Kelas
+//Jadwal
+//Presensi
 }

@@ -45,7 +45,28 @@ module.exports = function(app){
     app.route('/hapusdatadosen/:id')
     .delete(json.hapusdatadosen);
 //Matakuliah
+    app.route('/tampilsemuamatakuliah')
+    .get(json.getalldatamatakuliah);
+    app.route('/tampilmatakuliahbyid/:id')
+    .get(json.getdatamatakuliahbyid);
+    app.route('/tambahmatakuliah')
+    .post(json.tambahdatamatakuliah);
+    app.route('/ubahmatakuliah/:id')
+    .put(json.ubahdatamatakuliah);
+    app.route('/hapusmatakuliah/:id')
+    .delete(json.hapusdatamatakuliah);
+    
 //Ruangan
+    app.route('/tampilsemuaruangan')
+    .get(json.getalldataruangan);
+    app.route('/tampilruanganbyid/:id')
+    .get(json.getdataruanganbyid);
+    app.route('/tambahruangan')
+        .post(json.tambahdataruangan);
+    app.route('/ubahruangan/:id')
+        .put(json.ubahdataruangan);
+    app.route('/hapusruangan/:id')
+        .delete(json.hapusruangan);
 //Kelas
 //Jadwal
 //Presensi

@@ -494,7 +494,247 @@ exports.hapusdatadosen = function (req, res) {
     });
 }
 //Matakuliah
+exports.getalldatamatakuliah = function(req, res) {
+    
+    connection.query('SELECT * FROM matakuliah', function(error, rows, fields) {
+        if (error) {
+            console.log(error);  
+        } else {
+            response.ok(rows, res);
+        }
+    });
+};
+exports.getdatamatakuliahbyid = function(req, res) {
+    let id = req.params.id;
+    connection.query('SELECT * FROM matakuliah where id = ?',[id], function(error, rows, fields) {
+        if (error) {
+            console.log(error);  
+           return res.status(500).json({ error: "data dengan ID id tidak ditemukan" });
+        } else {
+            response.ok(rows, res);
+        }
+    });
+};
+exports.tambahdatamatakuliah = function(req, res){
+    var kode_matakuliah = req.body.kode_matakuliah;
+    var nama_matakuliah = req.body.nama_matakuliah;
+    var sks = req.body.sks;
+
+  
+       
+    if (!kode_matakuliah) {
+        return res.status(400).json({ error: "Kode Matakuliah harus diisi." });
+    }
+    if (!nama_matakuliah) {
+        return res.status(400).json({ error: "Nama Matakuliah harus diisi." });
+    }
+    if (!sks) {
+        return res.status(400).json({ error: "Jumlah SKS harus diisi." });
+    }
+    if (typeof nama_matakuliah !== 'string') {
+        return res.status(400).json({ error: "Nama Matakuliah harus berupa string." });
+    }
+    // if (typeof sks !== 'number') {
+    //     return res.status(400).json({ error: "Jumlah SKS harus berupa numeric." });
+    // }
+
+    connection.query('SELECT * FROM matakuliah WHERE kode_matakuliah = ?', [kode_matakuliah], function(error, result, fields){
+        if (error) {
+            console.log(error);
+            return res.status(500).json({ error: "Gagal memeriksa kode_matakuliah di database." });
+        }
+
+        if (result.length > 0) {
+            return res.status(400).json({ error: "kode_matakuliah sudah terdaftar." });
+        } else {
+            connection.query('INSERT INTO matakuliah (kode_matakuliah, nama_matakuliah, sks) VALUES (?, ?, ?)', [kode_matakuliah, nama_matakuliah, sks], function(error, rows, fields){
+                if(error){
+                    console.log(error);
+                    return res.status(500).json({ error: "Gagal menambahkan data ke database." });
+                } else {
+                    return res.status(200).json({ message: "Berhasil Menambahkan data." });
+                }
+            });
+        }
+    });
+};
+exports.ubahdatamatakuliah =function(req,res){
+    let id = req.params.id;
+    var kode_matakuliah = req.body.kode_matakuliah;
+    var nama_matakuliah = req.body.nama_matakuliah;
+    var sks = req.body.sks;
+
+  
+       
+    if (!kode_matakuliah) {
+        return res.status(400).json({ error: "Kode Matakuliah harus diisi." });
+    }
+    if (!nama_matakuliah) {
+        return res.status(400).json({ error: "Nama Matakuliah harus diisi." });
+    }
+    if (!sks) {
+        return res.status(400).json({ error: "Jumlah SKS harus diisi." });
+    }
+    if (typeof nama_matakuliah !== 'string') {
+        return res.status(400).json({ error: "Nama Matakuliah harus berupa string." });
+    }
+    // if (typeof sks !== 'number') {
+    //     return res.status(400).json({ error: "Jumlah SKS harus berupa numeric." });
+    // }
+
+    connection.query('SELECT * FROM matakuliah WHERE kode_matakuliah = ?', [kode_matakuliah], function(error, result, fields){
+        if (error) {
+            console.log(error);
+            return res.status(500).json({ error: "Gagal memeriksa kode_matakuliah di database." });
+        }
+
+        if (result.length > 0) {
+            return res.status(400).json({ error: "kode_matakuliah sudah terdaftar." });
+        } else {
+            connection.query('UPDATE matakuliah SET kode_matakuliah=?, nama_matakuliah=?, sks=? WHERE id=?', [kode_matakuliah, nama_matakuliah, sks, id], function(error, rows, fields){
+                if(error){
+                    console.log(error);
+                    return res.status(500).json({ error: "Gagal menambahkan data ke database." });
+                } else {
+                    return res.status(200).json({ message: "Berhasil Mengubah data." });
+                }
+            });
+        }
+    });
+};
+exports.hapusdatamatakuliah = function (req, res) {
+    let id = req.params.id;
+    connection.query('DELETE FROM matakuliah WHERE id=?',[id],function(error, rows, fields) {
+        if (error) {
+            console.log(error);  
+           return res.status(500).json({ error: "data dengan ID id tidak ditemukan" });
+        } else {
+            response.ok("Data Berhasil Dihapus", res);
+        }
+    });
+}
 //Ruangan
+exports.getalldataruangan = function(req, res) {
+    
+    connection.query('SELECT * FROM ruangan', function(error, rows, fields) {
+        if (error) {
+            console.log(error);  
+        } else {
+            response.ok(rows, res);
+        }
+    });
+};
+exports.getdataruanganbyid = function(req, res) {
+    let id = req.params.id;
+    connection.query('SELECT * FROM ruangan where id = ?',[id], function(error, rows, fields) {
+        if (error) {
+            console.log(error);  
+           return res.status(500).json({ error: "data dengan ID id tidak ditemukan" });
+        } else {
+            response.ok(rows, res);
+        }
+    });
+};
+exports.tambahdataruangan = function(req, res){
+    var gedung = req.body.gedung;
+    var lantai = req.body.lantai;
+    var ruangan = req.body.ruangan;
+    if (!gedung) {
+        return res.status(400).json({ error: "Gedung harus diisi." });
+    }
+    if (!lantai) {
+        return res.status(400).json({ error: "Lantai harus diisi." });
+    }
+    if (!ruangan) {
+        return res.status(400).json({ error: "Ruangan harus diisi." });
+    }
+
+    // if (typeof gedung !== 'gedung') {
+    //     return res.status(400).json({ error: "Gedung harus berupa numeric." });
+    // }
+    // if (typeof lantai !== 'lantai') {
+    //     return res.status(400).json({ error: "Lantai harus berupa numeric." });
+    // }
+    // if (typeof ruangan !== 'ruangan') {
+    //     return res.status(400).json({ error: "Ruangan harus berupa numeric." });
+    // }
+    connection.query('SELECT * FROM ruangan WHERE gedung = ? AND lantai = ? AND ruangan = ?', [gedung, lantai, ruangan], function(error, result, fields){
+        if (error) {
+            console.log(error);
+            return res.status(500).json({ error: "Gagal memeriksa ruangan di database." });
+        }
+
+        if (result.length > 0) {
+            return res.status(400).json({ error: "ruangan sudah terdaftar." });
+        } else {
+            connection.query('INSERT INTO ruangan (gedung, lantai, ruangan) VALUES (?, ?, ?)', [gedung, lantai, ruangan], function(error, rows, fields){
+                if(error){
+                    console.log(error);
+                    return res.status(500).json({ error: "Gagal menambahkan data ke database." });
+                } else {
+                    return res.status(200).json({ message: "Berhasil Menambahkan data." });
+                }          
+            });
+        }
+    });
+    
+};
+exports.ubahdataruangan =function(req,res){
+    let id = req.params.id;
+    var gedung = req.body.gedung;
+    var lantai = req.body.lantai;
+    var ruangan = req.body.ruangan;
+    if (!gedung) {
+        return res.status(400).json({ error: "Gedung harus diisi." });
+    }
+    if (!lantai) {
+        return res.status(400).json({ error: "Lantai harus diisi." });
+    }
+    if (!ruangan) {
+        return res.status(400).json({ error: "Ruangan harus diisi." });
+    }
+
+    // if (typeof gedung !== 'gedung') {
+    //     return res.status(400).json({ error: "Gedung harus berupa numeric." });
+    // }
+    // if (typeof lantai !== 'lantai') {
+    //     return res.status(400).json({ error: "Lantai harus berupa numeric." });
+    // }
+    // if (typeof ruangan !== 'ruangan') {
+    //     return res.status(400).json({ error: "Ruangan harus berupa numeric." });
+    // }
+    connection.query('SELECT * FROM ruangan WHERE gedung = ? AND lantai = ? AND ruangan = ?', [gedung, lantai, ruangan], function(error, result, fields){
+        if (error) {
+            console.log(error);
+            return res.status(500).json({ error: "Gagal memeriksa ruangan di database." });
+        }
+
+        if (result.length > 0) {
+            return res.status(400).json({ error: "ruangan sudah terdaftar." });
+        } else {
+            connection.query('UPDATE ruangan SET gedung =?, lantai=?, ruangan=? WHERE id=?', [gedung, lantai, ruangan, id], function(error, rows, fields){
+                if(error){
+                    console.log(error);
+                    return res.status(500).json({ error: "Gagal menambahkan data ke database." });
+                } else {
+                    return res.status(200).json({ message: "Berhasil megubah data." });
+                }          
+            });
+        }
+    });
+    
+};
+exports.hapusruangan = function (req, res) {
+    let id = req.params.id;
+    connection.query('DELETE FROM ruangan WHERE id=?',[id],function(error, rows, fields) {
+        if (error) {
+            console.log(error);  
+           return res.status(500).json({ error: "data dengan ID id tidak ditemukan" });
+        } else {
+            response.ok("Data Berhasil Dihapus", res);
+        }
+    });
+}
 //Kelas
 //Jadwal
 //Presensi

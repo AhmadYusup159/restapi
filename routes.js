@@ -58,9 +58,9 @@ module.exports = function(app){
     
 //Ruangan
     app.route('/tampilsemuaruangan')
-    .get(json.getalldataruangan);
+        .get(json.getalldataruangan);
     app.route('/tampilruanganbyid/:id')
-    .get(json.getdataruanganbyid);
+        .get(json.getdataruanganbyid);
     app.route('/tambahruangan')
         .post(json.tambahdataruangan);
     app.route('/ubahruangan/:id')
@@ -68,6 +68,36 @@ module.exports = function(app){
     app.route('/hapusruangan/:id')
         .delete(json.hapusruangan);
 //Kelas
+    app.route('/tampilsemuakelas')
+        .get(json.getalldatakelas);
+    app.route('/tampilkelasbyid/:id')
+        .get(json.getdatakelasbyid);
+    app.route('/tambahkelas')
+        .post(json.tambahdatakelas);
+    app.route('/ubahkelasid/:id')
+        .put(json.ubahdatakelas);
+    app.route('/hapuskelas/:id')
+        .delete(json.hapuskelas);
 //Jadwal
+    app.route('/tampilsemuajadwal')
+    .get(json.getalldatajadwal);
+    app.route('/tampiljadwalbyid/:id')
+    .get(json.getdatajadwalbyid);
+    app.route('/tambahjadwal')
+        .post(json.tambahdatajadwal);
+    app.route('/ubahjadwal/:id')
+        .put(json.ubahdatajadwal);
+    app.route('/hapusjadwal/:id')
+        .delete(json.hapusjadwal);
 //Presensi
+    app.route('/tampilsemuapresensi')
+    .get(json.getalldatapresensi);
+    app.route('/tampilpresesnsibyid/:id')
+    .get(json.getpresensibyid)
+    app.route('/tambahpresensi')
+        .post(json.tambahdatapresensi);
+    app.route('/ubahpresensi/:id')
+        .put(json.ubahdatapresensi);
+    app.route('/hapuspresensi/:id')
+        .delete(json.hapuspresensi);
 }

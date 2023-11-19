@@ -24,7 +24,7 @@ exports.getdatamahasiswabyid = function(req, res) {
             console.log(error);
             return res.status(500).json({ error: "Data dengan ID " + id + " tidak ditemukan" });
         } else {
-            return res.status(200).json(rows);
+            response.ok(rows, res);
         }
     });
 };
@@ -536,6 +536,7 @@ exports.tambahdatamatakuliah = function (req, res) {
     var kode_matakuliah = req.body.kode_matakuliah;
     var nama_matakuliah = req.body.nama_matakuliah;
     var sks = req.body.sks;
+    var foto = req.file.filename; 
 
     if (!kode_matakuliah) {
         return res.status(400).json({ error: "Kode Matakuliah harus diisi." });
@@ -552,7 +553,9 @@ exports.tambahdatamatakuliah = function (req, res) {
     if (typeof sks !== 'number') {
         return res.status(400).json({ error: "Jumlah SKS harus berupa numeric." });
     }
-
+    if (!req.file) {
+        return res.status(400).json({ error: "Foto harus diunggah." });
+    }
     connection.query('SELECT * FROM matakuliah WHERE kode_matakuliah = ?', [kode_matakuliah], function (error, result, fields) {
         if (error) {
             console.log(error);
@@ -562,7 +565,7 @@ exports.tambahdatamatakuliah = function (req, res) {
         if (result.length > 0) {
             return res.status(400).json({ error: "kode_matakuliah sudah terdaftar." });
         } else {
-            connection.query('INSERT INTO matakuliah (kode_matakuliah, nama_matakuliah, sks) VALUES (?, ?, ?)', [kode_matakuliah, nama_matakuliah, sks], function (error, rows, fields) {
+            connection.query('INSERT INTO matakuliah (kode_matakuliah, nama_matakuliah, sks,foto) VALUES (?, ?, ?,?)', [kode_matakuliah, nama_matakuliah, sks, foto], function (error, rows, fields) {
                 if (error) {
                     console.log(error);
                     return res.status(500).json({ error: "Gagal Menambah data ke database." });
@@ -578,9 +581,8 @@ exports.ubahdatamatakuliah =function(req,res){
     var kode_matakuliah = req.body.kode_matakuliah;
     var nama_matakuliah = req.body.nama_matakuliah;
     var sks = req.body.sks;
+    var foto = req.file.filename; 
 
-  
-       
     if (!kode_matakuliah) {
         return res.status(400).json({ error: "Kode Matakuliah harus diisi." });
     }
@@ -593,11 +595,13 @@ exports.ubahdatamatakuliah =function(req,res){
     if (typeof nama_matakuliah !== 'string') {
         return res.status(400).json({ error: "Nama Matakuliah harus berupa string." });
     }
-    if (typeof sks !== 'number') {
-        return res.status(400).json({ error: "Jumlah SKS harus berupa numeric." });
+    // if (typeof sks !== 'number') {
+    //     return res.status(400).json({ error: "Jumlah SKS harus berupa numeric." });
+    // }
+    if (!req.file) {
+        return res.status(400).json({ error: "Foto harus diunggah." });
     }
-
-    connection.query('SELECT * FROM matakuliah WHERE kode_matakuliah = ?', [kode_matakuliah], function(error, result, fields){
+    connection.query('SELECT * FROM matakuliah WHERE kode_matakuliah = ?', [kode_matakuliah], function (error, result, fields) {
         if (error) {
             console.log(error);
             return res.status(500).json({ error: "Gagal memeriksa kode_matakuliah di database." });
@@ -606,8 +610,8 @@ exports.ubahdatamatakuliah =function(req,res){
         if (result.length > 0) {
             return res.status(400).json({ error: "kode_matakuliah sudah terdaftar." });
         } else {
-            connection.query('UPDATE matakuliah SET kode_matakuliah=?, nama_matakuliah=?, sks=? WHERE id_matakuliah=?', [kode_matakuliah, nama_matakuliah, sks, id], function(error, rows, fields){
-                if(error){
+            connection.query('UPDATE matakuliah SET kode_matakuliah=?, nama_matakuliah=?, sks=?,foto=? WHERE id_matakuliah=?', [kode_matakuliah, nama_matakuliah, sks, foto,id], function (error, rows, fields) {
+                if (error) {
                     console.log(error);
                     return res.status(500).json({ error: "Gagal Mengubah data ke database." });
                 } else {

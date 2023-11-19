@@ -3,6 +3,7 @@
 const { upload } = require('./uploadfotomahasiswa');
 const { uploadAdmin } = require('./uploadfotoadmin');
 const { uploadDosen } = require('./uploadfotodosen');
+const { uploadMakul } = require('./uploadfotomatakuliah');
 
 module.exports = function(app){
     var json = require('./controller');
@@ -50,9 +51,9 @@ module.exports = function(app){
     app.route('/tampilmatakuliahbyid/:id')
     .get(json.getdatamatakuliahbyid);
     app.route('/tambahmatakuliah')
-    .post(json.tambahdatamatakuliah);
+    .post(uploadMakul.single('foto'),json.tambahdatamatakuliah);
     app.route('/ubahmatakuliah/:id')
-    .put(json.ubahdatamatakuliah);
+    .put(uploadMakul.single('foto'),json.ubahdatamatakuliah);
     app.route('/hapusmatakuliah/:id')
     .delete(json.hapusdatamatakuliah);
     

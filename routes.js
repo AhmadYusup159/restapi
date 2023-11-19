@@ -83,6 +83,10 @@ module.exports = function(app){
     .get(json.getalldatajadwal);
     app.route('/tampiljadwalbyid/:id')
     .get(json.getdatajadwalbyid);
+    app.route('/tampilsemuajadwalmahasiswa')
+    .get(json.getalldatajadwalmahasiswa);
+    app.route('/tampiljadwalmahasiswabyidmahasiswa/:id')
+    .get(json.getdatajadwalmahasiswabyidmahasiswa);
     app.route('/tambahjadwal')
         .post(json.tambahdatajadwal);
     app.route('/ubahjadwal/:id')
@@ -94,6 +98,10 @@ module.exports = function(app){
     .get(json.getalldatapresensi);
     app.route('/tampilpresesnsibyid/:id')
     .get(json.getpresensibyid)
+    app.route('/tampilpresesnsimahasiswa')
+    .get(json.getalldatapresensimahasiswa)
+    app.route('/tampilpresesnsibyidmahasiwa/:id')
+    .get(json.getdatapresensimahasiswabyidmahasiswa)
     app.route('/tambahpresensi')
         .post(json.tambahdatapresensi);
     app.route('/ubahpresensi/:id')

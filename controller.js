@@ -1,7 +1,11 @@
-'use strict';
+
 
 var response = require('./res');
 var connection = require('./koneksi');
+var md5 = require('md5');
+var nodemailer = require('nodemailer');  
+
+
 
 exports.index = function(req,res){
     response.ok("API Berjalan",res)
@@ -37,7 +41,7 @@ exports.tambahdatamahasiswa = function(req, res){
     var status = req.body.status;
     var notlp = req.body.notlp;
     var email = req.body.email;
-    var password = req.body.password;
+    var password = md5(req.body.password);
     var nama_kelas = req.body.nama_kelas;
 
     if (!npm || npm.length !== 10) {
@@ -80,33 +84,50 @@ exports.tambahdatamahasiswa = function(req, res){
     if (!password) {
         return res.status(400).json({ error: "Password harus diisi." });
     }
-    console.log("Nama Kelas:", nama_kelas);
+   
 
     connection.query('SELECT id_kelas FROM kelas WHERE nama_kelas = ?', [nama_kelas], function(error, result, fields){
         if (error) {
             console.log(error);
             return res.status(500).json({ error: "Gagal mencari ID Kelas dari database." });
         }
-
+    
         if (result.length === 0) {
             return res.status(400).json({ error: "Kelas tidak ditemukan." });
         } else {
             var id_kelas = result[0].id_kelas;
-            connection.query('SELECT * FROM mahasiswa WHERE npm = ?', [npm], function(error, result, fields){
+            connection.query('SELECT * FROM mahasiswa WHERE npm = ? OR email = ?', [npm, email], function(error, result, fields){
                 if (error) {
                     console.log(error);
-                    return res.status(500).json({ error: "Gagal memeriksa NPM dari database." });
+                    return res.status(500).json({ error: "Gagal memeriksa NPM dan Email dari database." });
                 }
-
+    
                 if (result.length > 0) {
-                    return res.status(400).json({ error: "NPM sudah terdaftar." });
+                    // Check if NPM or Email already exists
+                    var duplicateField = result[0].npm === npm ? 'NPM' : 'Email';
+                    return res.status(400).json({ error: `${duplicateField} sudah terdaftar.` });
                 } else {
+                    // Continue with the insertion
                     connection.query('INSERT INTO mahasiswa (npm, nama_mahasiswa, jk, alamat, foto, status, notlp, email, password, id_kelas) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [npm, nama_mahasiswa, jk, alamat, foto, status, notlp, email, password, id_kelas], function(error, rows, fields){
                         if(error){
                             console.log(error);
                             return res.status(500).json({ error: "Gagal menambahkan data ke database." });
                         } else {
-                            return res.status(200).json({ message: "Berhasil Menambahkan data." });
+                            var userData = {
+                                username: nama_mahasiswa,
+                                email: email,
+                                password: password,
+                                role: 3, 
+                                tgl_daftar: new Date()
+                            };
+                            connection.query('INSERT INTO alluser SET ?', userData, function(error, rows, fields){
+                                if(error){
+                                    console.log(error);
+                                    return res.status(500).json({ error: "Gagal menambahkan data ke tabel alluser." });
+                                } else {
+                                    return res.status(200).json({ message: "Data berhasil diinputkan." });
+                                }
+                            });
                         }
                     });
                 }
@@ -124,7 +145,7 @@ exports.ubahdatamahasiswa = function (req, res) {
     var status = req.body.status;
     var notlp = req.body.notlp;
     var email = req.body.email;
-    var password = req.body.password;
+    var password = req.body.password ? md5(req.body.password) : null;
     
     if (!npm ) {
         return res.status(400).json({ error: "NPM harus diisi." });
@@ -225,17 +246,19 @@ exports.getadminbyid = function(req, res) {
 exports.tambahdataadmin = function(req, res){
     var nama_admin = req.body.nama_admin;
     var username = req.body.username;
-    var password = req.body.password;
+    var email = req.body.email;
+    var password = md5(req.body.password);
     var status = req.body.status;
     var foto = req.file.filename; 
-    
 
-  
     if (!nama_admin) {
         return res.status(400).json({ error: "Nama harus diisi." });
     }   
     if (!username) {
         return res.status(400).json({ error: "Username harus diisi." });
+    }
+    if (!email) {
+        return res.status(400).json({ error: "Email harus diisi." });
     }
     if (!password) {
         return res.status(400).json({ error: "Password harus diisi." });
@@ -250,21 +273,38 @@ exports.tambahdataadmin = function(req, res){
         return res.status(400).json({ error: "Nama harus berupa string." });
     }
 
-    connection.query('SELECT * FROM admin WHERE username = ?', [username], function(error, result, fields){
+    connection.query('SELECT * FROM admin WHERE username = ? OR email = ?', [username, email], function(error, result, fields){
         if (error) {
             console.log(error);
-            return res.status(500).json({ error: "Gagal memeriksa Username di database." });
+            return res.status(500).json({ error: "Gagal memeriksa Username dan Email di database." });
         }
 
         if (result.length > 0) {
-            return res.status(400).json({ error: "Username sudah terdaftar." });
+            // Check if Username or Email already exists
+            var duplicateField = result[0].username === username ? 'Username' : 'Email';
+            return res.status(400).json({ error: `${duplicateField} sudah terdaftar.` });
         } else {
-            connection.query('INSERT INTO admin (nama_admin, username, password, status, foto) VALUES (?, ?, ?, ?, ?)', [nama_admin, username, password, status, foto], function(error, rows, fields){
+            // Continue with the insertion
+            connection.query('INSERT INTO admin (nama_admin, username, email, password, status, foto) VALUES (?, ?, ?, ?, ?, ?)', [nama_admin, username, email, password, status, foto], function(error, rows, fields){
                 if(error){
                     console.log(error);
                     return res.status(500).json({ error: "Gagal menambahkan data ke database." });
                 } else {
-                    return res.status(200).json({ message: "Berhasil Menambahkan data." });
+                    var userData = {
+                        username: nama_admin,
+                        email: email,
+                        password: password,
+                        role: 1, 
+                        tgl_daftar: new Date()
+                    };
+                    connection.query('INSERT INTO alluser SET ?', userData, function(error, rows, fields){
+                        if(error){
+                            console.log(error);
+                            return res.status(500).json({ error: "Gagal menambahkan data ke tabel alluser." });
+                        } else {
+                            return res.status(200).json({ message: "Data berhasil diinputkan." });
+                        }
+                    });
                 }
             });
         }
@@ -274,7 +314,8 @@ exports.ubahdataadmin = function(req,res){
         let id = req.params.id;
         var nama_admin = req.body.nama_admin;
         var username = req.body.username;
-        var password = req.body.password;
+        var email = req.body.email;
+        var password = req.body.password ? md5(req.body.password) : null;
         var status = req.body.status;
         var foto = req.file.filename; 
         
@@ -285,6 +326,9 @@ exports.ubahdataadmin = function(req,res){
         }   
         if (!username) {
             return res.status(400).json({ error: "Username harus diisi." });
+        }
+        if (!email) {
+            return res.status(400).json({ error: "Email harus diisi." });
         }
         if (!password) {
             return res.status(400).json({ error: "Password harus diisi." });
@@ -308,7 +352,7 @@ exports.ubahdataadmin = function(req,res){
             if (result.length > 0) {
                 return res.status(400).json({ error: "Username sudah terdaftar." });
             } else {
-                connection.query('UPDATE admin SET nama_admin=?, username=?, password=?, status=?, foto=? WHERE id_admin=?', [nama_admin, username, password, status, foto, id], function(error, rows, fields){
+                connection.query('UPDATE admin SET nama_admin=?, username=?, email=?, password=?, status=?, foto=? WHERE id_admin=?', [nama_admin, username, email, password, status, foto, id], function(error, rows, fields){
                     if(error){
                         console.log(error);
                         return res.status(500).json({ error: "Gagal menambahkan data ke database." });
@@ -362,7 +406,7 @@ exports.tambahdatadosen = function(req, res){
     var status = req.body.status;
     var notlp = req.body.notlp;
     var email = req.body.email;
-    var password = req.body.password;
+    var password= req.body.password ? md5(req.body.password) : null;
 
     if (!nip ) {
         return res.status(400).json({ error: "NIP harus diisi." });
@@ -405,21 +449,38 @@ exports.tambahdatadosen = function(req, res){
         return res.status(400).json({ error: "Nama harus berupa string." });
     }
 
-    connection.query('SELECT * FROM dosen WHERE nip = ?', [nip], function(error, result, fields){
+    connection.query('SELECT * FROM dosen WHERE nip = ? OR email = ?', [nip, email], function(error, result, fields){
         if (error) {
             console.log(error);
-            return res.status(500).json({ error: "Gagal memeriksa NIP di database." });
+            return res.status(500).json({ error: "Gagal memeriksa NIP dan Email di database." });
         }
 
         if (result.length > 0) {
-            return res.status(400).json({ error: "NIP sudah terdaftar." });
+            // Check if NIP or Email already exists
+            var duplicateField = result[0].nip === nip ? 'NIP' : 'Email';
+            return res.status(400).json({ error: `${duplicateField} sudah terdaftar.` });
         } else {
+            // Continue with the insertion
             connection.query('INSERT INTO dosen (nip, nama_dosen, jk, alamat, foto, status, notlp, email, password) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)', [nip, nama_dosen, jk, alamat, foto, status, notlp, email, password], function(error, rows, fields){
                 if(error){
                     console.log(error);
                     return res.status(500).json({ error: "Gagal menambahkan data ke database." });
                 } else {
-                    return res.status(200).json({ message: "Berhasil Menambahkan data." });
+                    var userData = {
+                        username: nama_dosen,
+                        email: email,
+                        password: password,
+                        role: 2, 
+                        tgl_daftar: new Date()
+                    };
+                    connection.query('INSERT INTO alluser SET ?', userData, function(error, rows, fields){
+                        if(error){
+                            console.log(error);
+                            return res.status(500).json({ error: "Gagal menambahkan data ke tabel alluser." });
+                        } else {
+                            return res.status(200).json({ message: "Data berhasil diinputkan." });
+                        }
+                    });
                 }
             });
         }
@@ -435,7 +496,7 @@ exports.ubahdatadosen = function (req, res) {
     var status = req.body.status;
     var notlp = req.body.notlp;
     var email = req.body.email;
-    var password = req.body.password;
+    var password = req.body.password ? md5(req.body.password) : null;
 
     if (!nip ) {
         return res.status(400).json({ error: "NIP harus diisi." });

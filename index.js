@@ -13,7 +13,7 @@ app.use(morgan('dev'));
 // call routes
 var routes = require('./routes');
 routes(app);
-app.use('/auth', require('./middleware'));
+app.use('/', require('./middleware'));
 
  app.listen(3000, () =>{
 console.log('Server Berjalan');

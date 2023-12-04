@@ -17,8 +17,8 @@ router.get('/api/v1/index', controller.index);
 //halaman otorisasi
 router.get('/api/v1/mahasiswa', verifikasi([1]), controller.getalldatamahasiswa);
 router.get('/api/v1/mahasiswabyid/:id', verifikasi([1, 3]), controller.getdatamahasiswabyid);
-router.post('/api/v1/tambahmahasiswa', verifikasi([1]), uploadAdmin.single('foto'), controller.tambahdatamahasiswa);
-router.put('/api/v1/ubahdatamahasiswa/:id', verifikasi([1]), uploadAdmin.single('foto'), controller.ubahdatamahasiswa);
+router.post('/api/v1/tambahmahasiswa', verifikasi([1]), upload.single('foto'), controller.tambahdatamahasiswa);
+router.put('/api/v1/ubahdatamahasiswa/:id', verifikasi([1]), upload.single('foto'), controller.ubahdatamahasiswa);
 router.delete('/api/v1/hapusdatamahasiswa/:id', verifikasi([1]), controller.hapusdatamahasiswa);
 
 // Admin
@@ -69,6 +69,7 @@ router.get('/api/v1/presensi', verifikasi([1, 2, 3]), controller.getalldataprese
 router.get('/api/v1/presensibyid/:id', verifikasi([1]), controller.getpresensibyid);
 router.get('/api/v1/presensimahasiswa', verifikasi([1]), controller.getalldatapresensimahasiswa);
 router.get('/api/v1/presensibyidmahasiwa/:id', verifikasi([1, 3]), controller.getdatapresensimahasiswabyidmahasiswa);
+router.get('/api/v1/presensibyiddosen/:id', verifikasi([1, 3]), controller.getdatapresensimahasiswabyiddosen);
 router.post('/api/v1/tambahpresensi', verifikasi([1]), controller.tambahdatapresensi);
 router.put('/api/v1/ubahpresensi/:id', verifikasi([1]), controller.ubahdatapresensi);
 router.delete('/api/v1/hapuspresensi/:id', verifikasi([1]), controller.hapuspresensi);

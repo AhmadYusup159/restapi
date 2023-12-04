@@ -1245,6 +1245,18 @@ exports.getdatapresensimahasiswabyidmahasiswa = function (req, res) {
             }
         });
 };
+exports.getdatapresensimahasiswabyiddosen = function (req, res) {
+    let id = req.params.id;
+
+    connection.query('SELECT m.id_mahasiswa, m.npm, m.nama_mahasiswa, m.jk, m.alamat, m.foto, m.status, m.notlp, m.email, m.password, m.id_kelas, mk.id_matakuliah, mk.kode_matakuliah, mk.nama_matakuliah, mk.sks, COUNT(p.id_presensi) AS jumlah_presensi FROM mahasiswa m JOIN jadwal j ON m.id_mahasiswa = j.id_mahasiswa_jadwal JOIN kelas jk ON m.id_kelas = jk.id_kelas JOIN matakuliah mk ON j.id_matakuliah_jadwal = mk.id_matakuliah LEFT JOIN presensi p ON j.id_jadwal = p.id_jadwal WHERE j.id_dosen_jadwal=? GROUP BY m.id_dosen, mk.id_matakuliah;'
+        ,[id], function (error, rows, fields) {
+            if (error) {
+                console.log(error);
+            } else {
+                response.nestedPresensi(rows, res);
+            }
+        });
+};
 exports.tambahdatapresensi = function(req, res) {
     var kode_matakuliah = req.body.kode_matakuliah;
     var waktu = req.body.waktu;

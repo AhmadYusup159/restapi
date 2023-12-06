@@ -3,7 +3,8 @@
 var response = require('./res');
 var connection = require('./koneksi');
 var md5 = require('md5');
-var nodemailer = require('nodemailer');  
+var nodemailer = require('nodemailer'); 
+const path = require('path'); 
 
 
 
@@ -39,11 +40,13 @@ exports.getfotomahasiswabyid = function(req, res) {
             console.log(error);  
             return res.status(500).json({ error: "Data dengan ID "+id+ " tidak ditemukan" });
         } else {
-            // Mengembalikan URL foto atau nama file foto
-            res.status(200).json({ foto: rows[0].foto });
+            // Mengasumsikan foto disimpan dalam direktori 'foto_mahasiswa'
+            const namaFileFoto = rows[0].foto;
+            const URLFoto = path.join('https://3d5e-2400-9800-6032-73f5-51ac-5724-7de5-d59b.ngrok-free.app', 'foto_mahasiswa', namaFileFoto);
+            res.status(200).json({ foto: URLFoto });
         }
     });
-};
+}
 
 exports.tambahdatamahasiswa = function(req, res){
     var npm = req.body.npm;

@@ -17,6 +17,7 @@ router.get('/api/v1/index', controller.index);
 //halaman otorisasi
 router.get('/api/v1/mahasiswa', verifikasi([1]), controller.getalldatamahasiswa);
 router.get('/api/v1/mahasiswabyid/:id', verifikasi([1, 3]), controller.getdatamahasiswabyid);
+router.get('/api/v1/fotomahasiswa/:id', verifikasi([1, 3]), controller.getfotomahasiswabyid);
 router.post('/api/v1/tambahmahasiswa', verifikasi([1]), upload.single('foto'), controller.tambahdatamahasiswa);
 router.put('/api/v1/ubahdatamahasiswa/:id', verifikasi([1]), upload.single('foto'), controller.ubahdatamahasiswa);
 router.delete('/api/v1/hapusdatamahasiswa/:id', verifikasi([1]), controller.hapusdatamahasiswa);
@@ -24,6 +25,7 @@ router.delete('/api/v1/hapusdatamahasiswa/:id', verifikasi([1]), controller.hapu
 // Admin
 router.get('/api/v1/admin', verifikasi([1]), controller.getalldataadmin);
 router.get('/api/v1/adminbyid/:id', verifikasi([1]), controller.getadminbyid);
+router.get('/api/v1/fotoadmin/:id',  verifikasi([1]),  controller.getfotoadminbyid);
 router.post('/api/v1/tambahdataadmin', verifikasi([1]), uploadAdmin.single('foto'), controller.tambahdataadmin);
 router.put('/api/v1/ubahdataadmin/:id', verifikasi([1]), uploadAdmin.single('foto'), controller.ubahdataadmin);
 router.delete('/api/v1/hapusdataadmin/:id', verifikasi([1]), controller.hapusdatamaadmin);
@@ -31,6 +33,7 @@ router.delete('/api/v1/hapusdataadmin/:id', verifikasi([1]), controller.hapusdat
 // Dosen
 router.get('/api/v1/dosen', verifikasi([1]), controller.getalldatadosen);
 router.get('/api/v1/dosenbyid/:id', verifikasi([1, 2]), controller.getdatadosenbyid);
+router.get('/api/v1/fotodosen/:id', verifikasi([1, 2]), controller.getfotodosenbyid);
 router.post('/api/v1/tambahdatadosen', verifikasi([1]), uploadDosen.single('foto'), controller.tambahdatadosen);
 router.put('/api/v1/ubahdatadosen/:id', verifikasi([1]), uploadDosen.single('foto'), controller.ubahdatadosen);
 router.delete('/api/v1/hapusdatadosen/:id', verifikasi([1]), controller.hapusdatadosen);

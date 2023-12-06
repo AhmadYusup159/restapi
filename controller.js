@@ -32,6 +32,19 @@ exports.getdatamahasiswabyid = function(req, res) {
         }
     });
 };
+exports.getfotomahasiswabyid = function(req, res) {
+    let id = req.params.id;
+    connection.query('SELECT foto FROM mahasiswa where id_mahasiswa = ?',[id], function(error, rows, fields) {
+        if (error) {
+            console.log(error);  
+            return res.status(500).json({ error: "Data dengan ID "+id+ " tidak ditemukan" });
+        } else {
+            // Mengembalikan URL foto atau nama file foto
+            res.status(200).json({ foto: rows[0].foto });
+        }
+    });
+};
+
 exports.tambahdatamahasiswa = function(req, res){
     var npm = req.body.npm;
     var nama_mahasiswa = req.body.nama_mahasiswa;
@@ -243,6 +256,19 @@ exports.getadminbyid = function(req, res) {
         }
     });
 };
+exports.getfotoadminbyid = function(req, res) {
+    let id = req.params.id;
+    connection.query('SELECT foto FROM admin where id_admin = ?',[id], function(error, rows, fields) {
+        if (error) {
+            console.log(error);  
+            return res.status(500).json({ error: "Data dengan ID "+id+ " tidak ditemukan" });
+        } else {
+            // Mengembalikan URL foto atau nama file foto
+            res.status(200).json({ foto: rows[0].foto });
+        }
+    });
+};
+
 exports.tambahdataadmin = function(req, res){
     var nama_admin = req.body.nama_admin;
     var username = req.body.username;
@@ -486,6 +512,19 @@ exports.tambahdatadosen = function(req, res){
         }
     });
 };
+exports.getfotodosenbyid = function(req, res) {
+    let id = req.params.id;
+    connection.query('SELECT foto FROM dosen where id_dosen = ?',[id], function(error, rows, fields) {
+        if (error) {
+            console.log(error);  
+            return res.status(500).json({ error: "Data dengan ID "+id+ " tidak ditemukan" });
+        } else {
+            // Mengembalikan URL foto atau nama file foto
+            res.status(200).json({ foto: rows[0].foto });
+        }
+    });
+};
+
 exports.ubahdatadosen = function (req, res) {
     let id = req.params.id;
     var nip = req.body.nip;

@@ -4,7 +4,9 @@ var response = require('./res');
 var connection = require('./koneksi');
 var md5 = require('md5');
 var nodemailer = require('nodemailer'); 
-const path = require('path'); 
+const fs = require('fs');
+const path = require('path');
+
 
 
 
@@ -33,21 +35,35 @@ exports.getdatamahasiswabyid = function(req, res) {
         }
     });
 };
-exports.getfotomahasiswabyid = function(req, res) {
+exports.getfotomahasiswabyid = function (req, res) {
     let id = req.params.id;
-    connection.query('SELECT foto FROM mahasiswa where id_mahasiswa = ?',[id], function(error, rows, fields) {
+    connection.query('SELECT foto FROM mahasiswa where id_mahasiswa = ?', [id], function (error, rows, fields) {
         if (error) {
-            console.log(error);  
-            return res.status(500).json({ error: "Data dengan ID "+id+ " tidak ditemukan" });
+            console.log(error);
+            return res.status(500).json({ error: "Data dengan ID " + id + " tidak ditemukan" });
         } else {
-            // Mengasumsikan foto disimpan dalam direktori 'foto_mahasiswa'
             const namaFileFoto = rows[0].foto;
-            const URLFoto = path.join('https://3d5e-2400-9800-6032-73f5-51ac-5724-7de5-d59b.ngrok-free.app', 'foto_mahasiswa', namaFileFoto);
-            res.status(200).json({ foto: URLFoto });
+            const filePath = path.join(__dirname, 'foto_mahasiswa', namaFileFoto);
+
+            const ext = path.extname(namaFileFoto).toLowerCase();
+
+            let contentType = 'image/jpeg'; // Default to JPEG
+
+            if (ext === '.jpg' || ext === '.jpeg') {
+                contentType = 'image/jpeg';
+            } else if (ext === '.svg') {
+                contentType = 'image/svg+xml';
+            } else if (ext === '.png') {
+                contentType = 'image/png';
+            }
+            res.setHeader('Content-Type', contentType);
+            res.setHeader('Content-Disposition', 'inline; filename=' + namaFileFoto);
+
+            const fileStream = fs.createReadStream(filePath);
+            fileStream.pipe(res);
         }
     });
 }
-
 exports.tambahdatamahasiswa = function(req, res){
     var npm = req.body.npm;
     var nama_mahasiswa = req.body.nama_mahasiswa;
@@ -259,19 +275,35 @@ exports.getadminbyid = function(req, res) {
         }
     });
 };
-exports.getfotoadminbyid = function(req, res) {
+exports.getfotoadminbyid = function (req, res) {
     let id = req.params.id;
-    connection.query('SELECT foto FROM admin where id_admin = ?',[id], function(error, rows, fields) {
+    connection.query('SELECT foto FROM admin where id_admin = ?', [id], function (error, rows, fields) {
         if (error) {
-            console.log(error);  
-            return res.status(500).json({ error: "Data dengan ID "+id+ " tidak ditemukan" });
+            console.log(error);
+            return res.status(500).json({ error: "Data dengan ID " + id + " tidak ditemukan" });
         } else {
-            // Mengembalikan URL foto atau nama file foto
-            res.status(200).json({ foto: rows[0].foto });
+            const namaFileFoto = rows[0].foto;
+            const filePath = path.join(__dirname, 'foto_admin', namaFileFoto);
+
+            const ext = path.extname(namaFileFoto).toLowerCase();
+
+            let contentType = 'image/jpeg'; 
+
+            if (ext === '.jpg' || ext === '.jpeg') {
+                contentType = 'image/jpeg';
+            } else if (ext === '.svg') {
+                contentType = 'image/svg+xml';
+            } else if (ext === '.png') {
+                contentType = 'image/png';
+            }
+            res.setHeader('Content-Type', contentType);
+            res.setHeader('Content-Disposition', 'inline; filename=' + namaFileFoto);
+
+            const fileStream = fs.createReadStream(filePath);
+            fileStream.pipe(res);
         }
     });
-};
-
+}
 exports.tambahdataadmin = function(req, res){
     var nama_admin = req.body.nama_admin;
     var username = req.body.username;
@@ -515,18 +547,35 @@ exports.tambahdatadosen = function(req, res){
         }
     });
 };
-exports.getfotodosenbyid = function(req, res) {
+exports.getfotodosenbyid = function (req, res) {
     let id = req.params.id;
-    connection.query('SELECT foto FROM dosen where id_dosen = ?',[id], function(error, rows, fields) {
+    connection.query('SELECT foto FROM dosen where id_dosen = ?', [id], function (error, rows, fields) {
         if (error) {
-            console.log(error);  
-            return res.status(500).json({ error: "Data dengan ID "+id+ " tidak ditemukan" });
+            console.log(error);
+            return res.status(500).json({ error: "Data dengan ID " + id + " tidak ditemukan" });
         } else {
-            // Mengembalikan URL foto atau nama file foto
-            res.status(200).json({ foto: rows[0].foto });
+            const namaFileFoto = rows[0].foto;
+            const filePath = path.join(__dirname, 'foto_dosen', namaFileFoto);
+
+            const ext = path.extname(namaFileFoto).toLowerCase();
+
+            let contentType = 'image/jpeg'; // Default to JPEG
+
+            if (ext === '.jpg' || ext === '.jpeg') {
+                contentType = 'image/jpeg';
+            } else if (ext === '.svg') {
+                contentType = 'image/svg+xml';
+            } else if (ext === '.png') {
+                contentType = 'image/png';
+            }
+            res.setHeader('Content-Type', contentType);
+            res.setHeader('Content-Disposition', 'inline; filename=' + namaFileFoto);
+
+            const fileStream = fs.createReadStream(filePath);
+            fileStream.pipe(res);
         }
     });
-};
+}
 
 exports.ubahdatadosen = function (req, res) {
     let id = req.params.id;
@@ -635,6 +684,35 @@ exports.getdatamatakuliahbyid = function(req, res) {
         }
     });
 };
+exports.getfotomatakuliahbyid = function (req, res) {
+    let id = req.params.id;
+    connection.query('SELECT foto FROM matakuliah where id_matakuliah = ?', [id], function (error, rows, fields) {
+        if (error) {
+            console.log(error);
+            return res.status(500).json({ error: "Data dengan ID " + id + " tidak ditemukan" });
+        } else {
+            const namaFileFoto = rows[0].foto;
+            const filePath = path.join(__dirname, 'foto_matakuliah', namaFileFoto);
+
+            const ext = path.extname(namaFileFoto).toLowerCase();
+
+            let contentType = 'image/jpeg'; // Default to JPEG
+
+            if (ext === '.jpg' || ext === '.jpeg') {
+                contentType = 'image/jpeg';
+            } else if (ext === '.svg') {
+                contentType = 'image/svg+xml';
+            } else if (ext === '.png') {
+                contentType = 'image/png';
+            }
+            res.setHeader('Content-Type', contentType);
+            res.setHeader('Content-Disposition', 'inline; filename=' + namaFileFoto);
+
+            const fileStream = fs.createReadStream(filePath);
+            fileStream.pipe(res);
+        }
+    });
+}
 exports.tambahdatamatakuliah = function (req, res) {
     var kode_matakuliah = req.body.kode_matakuliah;
     var nama_matakuliah = req.body.nama_matakuliah;

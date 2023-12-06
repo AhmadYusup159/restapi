@@ -3,6 +3,7 @@ var auth = require('./auth');
 var router = express.Router();
 var verifikasi= require('./verifikasi');
 var controller = require('../controller');
+const path = require('path');
 const { upload } = require('../uploadfotomahasiswa');
 const { uploadAdmin } = require('../uploadfotoadmin');
 const { uploadDosen } = require('../uploadfotodosen');
@@ -49,6 +50,7 @@ router.delete('/api/v1/hapusdatadosen/:id', verifikasi([1]), controller.hapusdat
 // Matakuliah
 router.get('/api/v1/matakuliah', verifikasi([1, 2, 3]), controller.getalldatamatakuliah);
 router.get('/api/v1/matakuliahbyid/:id', verifikasi([1, 2, 3]), controller.getdatamatakuliahbyid);
+router.get('/api/v1/fotomatakuliah/:id', verifikasi([1]), controller.getfotomatakuliahbyid);
 router.post('/api/v1/tambahmatakuliah', verifikasi([1]), uploadMakul.single('foto'), controller.tambahdatamatakuliah);
 router.put('/api/v1/ubahmatakuliah/:id', verifikasi([1]), uploadMakul.single('foto'), controller.ubahdatamatakuliah);
 router.delete('/api/v1/hapusmatakuliah/:id', verifikasi([1]), controller.hapusdatamatakuliah);

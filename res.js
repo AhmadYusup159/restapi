@@ -135,3 +135,86 @@ exports.nestedPresensi = function (values, res) {
     res.json(data);
     res.end();
 };
+exports.nestedJadwalMatakuliah = function (values, res) {
+    const hasil = values.reduce((pengelompokan, item) => {
+        if (pengelompokan[item.nama_matakuliah]) {
+            const group = pengelompokan[item.nama_matakuliah];
+            if (Array.isArray(group.jadwal)) {
+                group.jadwal.push({
+                    id_jadwal: item.id_jadwal,
+                    semester: item.semester,
+                    hari: item.hari,
+                    jam_mulai: item.jam_mulai,
+                    jam_selesai: item.jam_selesai,
+                    ruangan: {
+                        id_ruangan: item.id_ruangan,
+                        gedung: item.gedung,
+                        lantai: item.lantai,
+                        ruangan: item.ruangan
+                    }
+                });
+            } else {
+                group.jadwal = [{
+                    id_jadwal: group.id_jadwal,
+                    semester: group.semester,
+                    hari: group.hari,
+                    jam_mulai: group.jam_mulai,
+                    jam_selesai: group.jam_selesai,
+                    ruangan: {
+                        id_ruangan: group.ruangan.id_ruangan,
+                        gedung: group.ruangan.gedung,
+                        lantai: group.ruangan.lantai,
+                        ruangan: group.ruangan.ruangan
+                    }
+                }, {
+                    id_jadwal: item.id_jadwal,
+                    semester: item.semester,
+                    hari: item.hari,
+                    jam_mulai: item.jam_mulai,
+                    jam_selesai: item.jam_selesai,
+                    ruangan: {
+                        id_ruangan: item.id_ruangan,
+                        gedung: item.gedung,
+                        lantai: item.lantai,
+                        ruangan: item.ruangan
+                    }
+                }];
+                delete group.id_jadwal;
+                delete group.semester;
+                delete group.hari;
+                delete group.jam_mulai;
+                delete group.jam_selesai;
+                delete group.ruangan;
+            }
+        } else {
+            pengelompokan[item.nama_matakuliah] = {
+                id_matakuliah: item.id_matakuliah,
+                kode_matakuliah: item.kode_matakuliah,
+                nama_matakuliah: item.nama_matakuliah,
+                sks: item.sks,
+                foto: item.foto,
+                jadwal: [{
+                    id_jadwal: item.id_jadwal,
+                    semester: item.semester,
+                    hari: item.hari,
+                    jam_mulai: item.jam_mulai,
+                    jam_selesai: item.jam_selesai,
+                    ruangan: {
+                        id_ruangan: item.id_ruangan,
+                        gedung: item.gedung,
+                        lantai: item.lantai,
+                        ruangan: item.ruangan
+                    }
+                }]
+            };
+        }
+        return pengelompokan;
+    }, {});
+
+    var data = {
+        'status': 200,
+        'values': Object.values(hasil)
+    };
+    res.json(data);
+    res.end();
+};

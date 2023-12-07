@@ -1080,6 +1080,17 @@ exports.getdatajadwalmahasiswabyidmahasiswa = function (req, res) {
             }
         });
 };
+exports.getdatajadwalmahasiswabyidmatakuliah = function (req, res) {
+    let id = req.params.id;
+    connection.query('SELECT matakuliah.id_matakuliah, matakuliah.kode_matakuliah, matakuliah.nama_matakuliah, matakuliah.sks, matakuliah.foto, jadwal.id_jadwal, jadwal.semester, jadwal.hari, jadwal.jam_mulai, jadwal.jam_selesai, ruangan.id_ruangan, ruangan.gedung, ruangan.lantai, ruangan.ruangan FROM matakuliah INNER JOIN jadwal ON matakuliah.id_matakuliah = jadwal.id_matakuliah_jadwal INNER JOIN ruangan ON jadwal.id_ruangan_jadwal = ruangan.id_ruangan INNER JOIN dosen ON jadwal.id_dosen_jadwal = dosen.id_dosen WHERE dosen.id_dosen = ?;',[id]
+        , function (error, rows, fields) {
+            if (error) {
+                console.log(error);
+            } else {
+                response.nestedJadwalMatakuliah(rows, res);
+            }
+        });
+};
 exports.tambahdatajadwal = function(req, res) {
     var nip_dosen = req.body.nip_dosen;
     var npm = req.body.npm;

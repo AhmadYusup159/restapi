@@ -73,6 +73,7 @@ router.get('/api/v1/jadwal', verifikasi([1, 2, 3]), controller.getalldatajadwal)
 router.get('/api/v1/jadwalbyid/:id', verifikasi([1]), controller.getdatajadwalbyid);
 router.get('/api/v1/jadwalmahasiswa', verifikasi([1]), controller.getalldatajadwalmahasiswa);
 router.get('/api/v1/jadwalmahasiswabyidmahasiswa/:id', verifikasi([1, 3]), controller.getdatajadwalmahasiswabyidmahasiswa);
+router.get('/api/v1/jadwalmatakuliah/:id', verifikasi([1,2]), controller.getdatajadwalmahasiswabyidmatakuliah);
 router.post('/api/v1/tambahjadwal', verifikasi([1]), controller.tambahdatajadwal);
 router.put('/api/v1/ubahjadwal/:id', verifikasi([1]), controller.ubahdatajadwal);
 router.delete('/api/v1/hapusjadwal/:id', verifikasi([1]), controller.hapusjadwal);

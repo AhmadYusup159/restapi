@@ -15,6 +15,6 @@ var routes = require('./routes');
 routes(app);
 app.use('/', require('./middleware'));
 
- app.listen(5000, () =>{
+ app.listen(3000, () =>{
 console.log('Server Berjalan');
  });

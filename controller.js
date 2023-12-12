@@ -850,15 +850,6 @@ exports.tambahdataruangan = function(req, res){
         return res.status(400).json({ error: "Ruangan harus diisi." });
     }
 
-    if (typeof gedung !== 'gedung') {
-        return res.status(400).json({ error: "Gedung harus berupa numeric." });
-    }
-    if (typeof lantai !== 'lantai') {
-        return res.status(400).json({ error: "Lantai harus berupa numeric." });
-    }
-    if (typeof ruangan !== 'ruangan') {
-        return res.status(400).json({ error: "Ruangan harus berupa numeric." });
-    }
     connection.query('SELECT * FROM ruangan WHERE gedung = ? AND lantai = ? AND ruangan = ?', [gedung, lantai, ruangan], function(error, result, fields){
         if (error) {
             console.log(error);
@@ -1071,15 +1062,21 @@ exports.getalldatajadwalmahasiswa = function (req, res) {
 };
 exports.getdatajadwalmahasiswabyidmahasiswa = function (req, res) {
     let id = req.params.id;
-    connection.query('SELECT mahasiswa.id_mahasiswa AS id_mahasiswa, mahasiswa.npm, mahasiswa.nama_mahasiswa, mahasiswa.jk, mahasiswa.alamat, mahasiswa.foto, mahasiswa.status, mahasiswa.notlp, mahasiswa.email, mahasiswa.password, mahasiswa.id_kelas, jadwal.hari, jadwal.jam_mulai, jadwal.jam_selesai, jadwal.semester, kelas.nama_kelas, matakuliah.nama_matakuliah, matakuliah.sks FROM mahasiswa INNER JOIN jadwal ON mahasiswa.id_mahasiswa = jadwal.id_mahasiswa_jadwal LEFT JOIN kelas ON mahasiswa.id_kelas = kelas.id_kelas LEFT JOIN matakuliah ON jadwal.id_matakuliah_jadwal = matakuliah.id_matakuliah WHERE jadwal.id_mahasiswa_jadwal=? ORDER BY mahasiswa.nama_mahasiswa, jadwal.hari ;',[id]
-        , function (error, rows, fields) {
+    let hari = req.params.hari; 
+    connection.query(
+        'SELECT mahasiswa.id_mahasiswa AS id_mahasiswa, mahasiswa.npm, mahasiswa.nama_mahasiswa, mahasiswa.jk, mahasiswa.alamat, mahasiswa.foto, mahasiswa.status, mahasiswa.notlp, mahasiswa.email, mahasiswa.password, mahasiswa.id_kelas, jadwal.hari, jadwal.jam_mulai, jadwal.jam_selesai, jadwal.semester, kelas.nama_kelas,matakuliah.id_matakuliah, matakuliah.nama_matakuliah, matakuliah.sks, dosen.nama_dosen FROM mahasiswa INNER JOIN jadwal ON mahasiswa.id_mahasiswa = jadwal.id_mahasiswa_jadwal LEFT JOIN kelas ON mahasiswa.id_kelas = kelas.id_kelas LEFT JOIN matakuliah ON jadwal.id_matakuliah_jadwal = matakuliah.id_matakuliah LEFT JOIN dosen ON jadwal.id_dosen_jadwal = dosen.id_dosen WHERE jadwal.id_mahasiswa_jadwal=? AND jadwal.hari=? ORDER BY mahasiswa.nama_mahasiswa, jadwal.hari;',
+        [id, hari], 
+        function (error, rows, fields) {
             if (error) {
                 console.log(error);
             } else {
                 response.nested(rows, res);
             }
-        });
+        }
+    );
 };
+
+
 exports.getdatajadwalmahasiswabyidmatakuliah = function (req, res) {
     let id = req.params.id;
     connection.query('SELECT matakuliah.id_matakuliah, matakuliah.kode_matakuliah, matakuliah.nama_matakuliah, matakuliah.sks, matakuliah.foto, jadwal.id_jadwal, jadwal.semester, jadwal.hari, jadwal.jam_mulai, jadwal.jam_selesai, ruangan.id_ruangan, ruangan.gedung, ruangan.lantai, ruangan.ruangan FROM matakuliah INNER JOIN jadwal ON matakuliah.id_matakuliah = jadwal.id_matakuliah_jadwal INNER JOIN ruangan ON jadwal.id_ruangan_jadwal = ruangan.id_ruangan INNER JOIN dosen ON jadwal.id_dosen_jadwal = dosen.id_dosen WHERE dosen.id_dosen = ?;',[id]
@@ -1367,7 +1364,7 @@ exports.getalldatapresensimahasiswa = function (req, res) {
 exports.getdatapresensimahasiswabyidmahasiswa = function (req, res) {
     let id = req.params.id;
 
-    connection.query('SELECT m.id_mahasiswa, m.npm, m.nama_mahasiswa, m.jk, m.alamat, m.foto, m.status, m.notlp, m.email, m.password, m.id_kelas, mk.id_matakuliah, mk.kode_matakuliah, mk.nama_matakuliah, mk.sks, COUNT(p.id_presensi) AS jumlah_presensi FROM mahasiswa m JOIN jadwal j ON m.id_mahasiswa = j.id_mahasiswa_jadwal JOIN kelas jk ON m.id_kelas = jk.id_kelas JOIN matakuliah mk ON j.id_matakuliah_jadwal = mk.id_matakuliah LEFT JOIN presensi p ON j.id_jadwal = p.id_jadwal WHERE j.id_mahasiswa_jadwal=? GROUP BY m.id_mahasiswa, mk.id_matakuliah;'
+    connection.query('SELECT m.id_mahasiswa, m.npm, m.nama_mahasiswa, m.jk, m.alamat, m.foto, m.status, m.notlp, m.email, m.password, m.id_kelas, mk.id_matakuliah,mk.id_matakuliah, mk.kode_matakuliah, mk.nama_matakuliah, mk.sks,jk.nama_kelas, COUNT(p.id_presensi) AS jumlah_presensi FROM mahasiswa m JOIN jadwal j ON m.id_mahasiswa = j.id_mahasiswa_jadwal JOIN kelas jk ON m.id_kelas = jk.id_kelas JOIN matakuliah mk ON j.id_matakuliah_jadwal = mk.id_matakuliah LEFT JOIN presensi p ON j.id_jadwal = p.id_jadwal WHERE j.id_mahasiswa_jadwal=? GROUP BY m.id_mahasiswa, mk.id_matakuliah;'
         ,[id], function (error, rows, fields) {
             if (error) {
                 console.log(error);
@@ -1391,6 +1388,7 @@ exports.getdatapresensimahasiswabyiddosen = function (req, res) {
 exports.tambahdatapresensi = function(req, res) {
     var kode_matakuliah = req.body.kode_matakuliah;
     var waktu = req.body.waktu;
+    var tanggal = req.body.tanggal;
     var lokasi = req.body.lokasi;
 
     if (!kode_matakuliah) {
@@ -1399,6 +1397,13 @@ exports.tambahdatapresensi = function(req, res) {
 
     if (!waktu) {
         return res.status(400).json({ error: "waktu harus diunggah." });
+    }
+    if (!tanggal) {
+        return res.status(400).json({ error: "tanggal harus diunggah." });
+
+    }
+    if (!lokasi) {
+        return res.status(400).json({ error: "lokasi harus diunggah." });
     }
 
     connection.query('SELECT id_matakuliah FROM matakuliah WHERE kode_matakuliah = ?', [kode_matakuliah], function(error, resultkode, fields) {
@@ -1421,7 +1426,7 @@ exports.tambahdatapresensi = function(req, res) {
                     return res.status(400).json({ error: "jadwal tidak ditemukan." });
                 } else {
                     var id_jadwal = resultjadwal[0].id_jadwal;
-                    connection.query('INSERT INTO presensi (id_jadwal, waktu, lokasi) VALUES (?, ?, ?)', [id_jadwal, waktu, lokasi], function(error, rows, fields) {
+                    connection.query('INSERT INTO presensi (id_jadwal, waktu,tanggal, lokasi) VALUES (?, ?,?, ?)', [id_jadwal, waktu,tanggal, lokasi], function(error, rows, fields) {
                         if (error) {
                             console.log(error);
                             return res.status(500).json({ error: "Gagal menambahkan data ke database." });
@@ -1492,3 +1497,19 @@ exports.hapuspresensi = function (req, res) {
         }
     });
 };
+
+
+exports.getdatapresensimahasiswabyidmatakuliah = function (req, res) {
+    let idMahasiswa = req.params.id;
+    let idMatakuliah = req.params.idmakul;
+
+    connection.query('SELECT m.id_mahasiswa, m.npm, m.nama_mahasiswa, m.jk, m.alamat, m.foto, m.status, m.notlp, m.email, m.password, m.id_kelas, mk.id_matakuliah, mk.kode_matakuliah, mk.nama_matakuliah, mk.sks, p.tanggal, p.lokasi FROM mahasiswa m JOIN jadwal j ON m.id_mahasiswa = j.id_mahasiswa_jadwal JOIN kelas jk ON m.id_kelas = jk.id_kelas JOIN matakuliah mk ON j.id_matakuliah_jadwal = mk.id_matakuliah LEFT JOIN presensi p ON j.id_jadwal = p.id_jadwal WHERE m.id_mahasiswa=? AND mk.id_matakuliah=? ORDER BY p.tanggal;'
+        ,[idMahasiswa, idMatakuliah], function (error, rows, fields) {
+            if (error) {
+                console.log(error);
+            } else {
+                response.formatPresensi(rows, res);
+            }
+        });
+};
+

@@ -1501,9 +1501,9 @@ exports.hapuspresensi = function (req, res) {
 
 exports.getdatapresensimahasiswabyidmatakuliah = function (req, res) {
     let idMahasiswa = req.params.id;
-    let idMatakuliah = req.params.idmakul;
+    let idMatakuliah = req.params.idmatakuliah;
 
-    connection.query('SELECT m.id_mahasiswa, m.npm, m.nama_mahasiswa, m.jk, m.alamat, m.foto, m.status, m.notlp, m.email, m.password, m.id_kelas, mk.id_matakuliah, mk.kode_matakuliah, mk.nama_matakuliah, mk.sks, p.tanggal, p.lokasi FROM mahasiswa m JOIN jadwal j ON m.id_mahasiswa = j.id_mahasiswa_jadwal JOIN kelas jk ON m.id_kelas = jk.id_kelas JOIN matakuliah mk ON j.id_matakuliah_jadwal = mk.id_matakuliah LEFT JOIN presensi p ON j.id_jadwal = p.id_jadwal WHERE m.id_mahasiswa=? AND mk.id_matakuliah=? ORDER BY p.tanggal;'
+    connection.query('SELECT m.id_mahasiswa, m.npm, m.nama_mahasiswa, m.jk, m.alamat, m.foto, m.status, m.notlp, m.email, m.password, m.id_kelas, mk.id_matakuliah, mk.kode_matakuliah, mk.nama_matakuliah, mk.sks, p.tanggal, p.waktu FROM mahasiswa m JOIN jadwal j ON m.id_mahasiswa = j.id_mahasiswa_jadwal JOIN kelas jk ON m.id_kelas = jk.id_kelas JOIN matakuliah mk ON j.id_matakuliah_jadwal = mk.id_matakuliah LEFT JOIN presensi p ON j.id_jadwal = p.id_jadwal WHERE m.id_mahasiswa=? AND mk.id_matakuliah=? ORDER BY p.tanggal;'
         ,[idMahasiswa, idMatakuliah], function (error, rows, fields) {
             if (error) {
                 console.log(error);

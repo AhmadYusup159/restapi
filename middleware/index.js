@@ -82,12 +82,12 @@ router.delete('/api/v1/hapusjadwal/:id', verifikasi([1]), controller.hapusjadwal
 router.get('/api/v1/presensi', verifikasi([1, 2, 3]), controller.getalldatapresensi);
 router.get('/api/v1/presensibyid/:id', verifikasi([1]), controller.getpresensibyid);
 router.get('/api/v1/presensimahasiswa', verifikasi([1]), controller.getalldatapresensimahasiswa);
-router.get('/api/v1/presensibyidmahasiwa/:id', verifikasi([1, 3]), controller.getdatapresensimahasiswabyidmahasiswa);
+router.get('/api/v1/presensibyidmahasiswa/:id', verifikasi([1, 3]), controller.getdatapresensimahasiswabyidmahasiswa);
 router.get('/api/v1/presensibyiddosen/:id', verifikasi([1, 3]), controller.getdatapresensimahasiswabyiddosen);
 router.post('/api/v1/tambahpresensi', verifikasi([1,3]), controller.tambahdatapresensi);
 router.put('/api/v1/ubahpresensi/:id', verifikasi([1]), controller.ubahdatapresensi);
 router.delete('/api/v1/hapuspresensi/:id', verifikasi([1]), controller.hapuspresensi);
-router.get('/api/v1/presensimatakuliah/:id/:idmakul', verifikasi([1, 3]), controller.getdatapresensimahasiswabyidmatakuliah);
+router.get('/api/v1/presensimatakuliah/:id/:idmatakuliah', verifikasi([1, 3]), controller.getdatapresensimahasiswabyidmatakuliah);
 
 
 module.exports = router;

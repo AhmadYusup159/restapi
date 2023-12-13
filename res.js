@@ -255,15 +255,15 @@ exports.formatPresensi = function (values, res) {
                     nama_matakuliah: item.nama_matakuliah,
                     sks: item.sks,
                     presensi: [{
-                        tanggal: item.tanggal,
-                        lokasi: item.lokasi
+                        tanggal: new Date(item.tanggal).toISOString().split('T')[0],
+                        waktu: item.waktu
                     }]
                 }]
             };
         } else {
             result[key].matakuliah[0].presensi.push({
-                tanggal: item.tanggal,
-                lokasi: item.lokasi
+                tanggal: new Date(item.tanggal).toISOString().split('T')[0],
+                waktu: item.waktu
             });
         }
         return result;

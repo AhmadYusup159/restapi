@@ -1386,6 +1386,7 @@ exports.getdatapresensimahasiswabyiddosen = function (req, res) {
         });
 };
 exports.tambahdatapresensi = function(req, res) {
+    let id_mahasiswa = req.params.id;
     var kode_matakuliah = req.body.kode_matakuliah;
     var waktu = req.body.waktu;
     var tanggal = req.body.tanggal;
@@ -1405,7 +1406,15 @@ exports.tambahdatapresensi = function(req, res) {
     if (!lokasi) {
         return res.status(400).json({ error: "lokasi harus diunggah." });
     }
+    connection.query('SELECT COUNT(*) AS count FROM presensi WHERE id_mahasiswa = ? AND tanggal = ? AND id_jadwal IN (SELECT id_jadwal FROM jadwal WHERE id_matakuliah_jadwal IN (SELECT id_matakuliah FROM matakuliah WHERE kode_matakuliah = ?))', [id_mahasiswa, tanggal, kode_matakuliah], function(error, resultCount, fields) {
+        if (error) {
+            console.log(error);
+            return res.status(500).json({ error: "Gagal memeriksa data presensi." });
+        }
 
+        if (resultCount[0].count > 0) {
+            return res.status(400).json({ error: "Presensi sudah terinput untuk tanggal dan jadwal yang sama." });
+        } else {
     connection.query('SELECT id_matakuliah FROM matakuliah WHERE kode_matakuliah = ?', [kode_matakuliah], function(error, resultkode, fields) {
         if (error) {
             console.log(error);
@@ -1426,7 +1435,7 @@ exports.tambahdatapresensi = function(req, res) {
                     return res.status(400).json({ error: "jadwal tidak ditemukan." });
                 } else {
                     var id_jadwal = resultjadwal[0].id_jadwal;
-                    connection.query('INSERT INTO presensi (id_jadwal, waktu,tanggal, lokasi) VALUES (?, ?,?, ?)', [id_jadwal, waktu,tanggal, lokasi], function(error, rows, fields) {
+                    connection.query('INSERT INTO presensi (id_jadwal, waktu,tanggal, lokasi, id_mahasiswa) VALUES (?, ?,?,?, ?)', [id_jadwal, waktu,tanggal, lokasi, id_mahasiswa], function(error, rows, fields) {
                         if (error) {
                             console.log(error);
                             return res.status(500).json({ error: "Gagal menambahkan data ke database." });
@@ -1438,7 +1447,12 @@ exports.tambahdatapresensi = function(req, res) {
             });
         }
     });
+}
+})
 };
+
+
+
 exports.ubahdatapresensi = function(req, res) {
     let id = req.params.id;
     var kode_matakuliah = req.body.kode_matakuliah;

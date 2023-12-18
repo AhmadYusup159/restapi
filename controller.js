@@ -1038,7 +1038,31 @@ exports.getalldatajadwal = function(req, res) {
             }
         });
 };
-exports.getdatajadwalbyid = function(req, res) {
+
+exports.getJadwalByIdDosen = function (req, res) {
+    const {
+        id_dosen
+    } = req.body; 
+
+    if (!id_dosen) {
+        return res.status(400).json({
+            error: "Field 'id' is required in the request body."
+        });
+    }
+
+    connection.query('SELECT jadwal.*, dosen.*, matakuliah.*, ruangan.*, mahasiswa.*, kelas.* FROM jadwal JOIN dosen ON jadwal.id_dosen_jadwal = ? JOIN matakuliah ON jadwal.id_matakuliah_jadwal = matakuliah.id_matakuliah JOIN ruangan ON jadwal.id_ruangan_jadwal = ruangan.id_ruangan JOIN mahasiswa ON jadwal.id_mahasiswa_jadwal = mahasiswa.id_mahasiswa JOIN kelas ON mahasiswa.id_kelas = kelas.id_kelas', [id_dosen], function (error, rows) {
+        if (error) {
+            console.log(error);
+            return res.status(500).json({
+                error: "Data jadwal by dosen tidak ditemukan"
+            });
+        } else {
+            response.ok(rows, res);
+        }
+    });
+};
+
+exports.getdatajadwalbyid = function (req, res) {
     let id = req.params.id;
     connection.query('SELECT * FROM jadwal JOIN dosen ON jadwal.id_dosen_jadwal = dosen.id_dosen JOIN matakuliah ON jadwal.id_matakuliah_jadwal = matakuliah.id_matakuliah JOIN ruangan ON jadwal.id_ruangan_jadwal = ruangan.id_ruangan JOIN mahasiswa ON jadwal.id_mahasiswa_jadwal = mahasiswa.id_mahasiswa JOIN kelas ON mahasiswa.id_kelas = kelas.id_kelas WHERE jadwal.id_jadwal = ?;',[id], function(error, rows, fields) {
         if (error) {
@@ -1048,8 +1072,9 @@ exports.getdatajadwalbyid = function(req, res) {
             response.ok(rows, res);
         }
     });
-    
 };
+
+
 exports.getalldatajadwalmahasiswa = function (req, res) {
     connection.query('SELECT mahasiswa.id_mahasiswa AS id_mahasiswa, mahasiswa.npm, mahasiswa.nama_mahasiswa, mahasiswa.jk, mahasiswa.alamat, mahasiswa.foto, mahasiswa.status, mahasiswa.notlp, mahasiswa.email, mahasiswa.password, mahasiswa.id_kelas, jadwal.hari, jadwal.jam_mulai, jadwal.jam_selesai, jadwal.semester, kelas.nama_kelas, matakuliah.nama_matakuliah, matakuliah.sks FROM mahasiswa INNER JOIN jadwal ON mahasiswa.id_mahasiswa = jadwal.id_mahasiswa_jadwal LEFT JOIN kelas ON mahasiswa.id_kelas = kelas.id_kelas LEFT JOIN matakuliah ON jadwal.id_matakuliah_jadwal = matakuliah.id_matakuliah ORDER BY mahasiswa.nama_mahasiswa, jadwal.hari;'
         , function (error, rows, fields) {
@@ -1390,6 +1415,7 @@ exports.tambahdatapresensi = function(req, res) {
     var waktu = req.body.waktu;
     var tanggal = req.body.tanggal;
     var lokasi = req.body.lokasi;
+    var npm = req.body.npm;
 
     if (!kode_matakuliah) {
         return res.status(400).json({ error: "kode matakuliah harus diisi." });
@@ -1405,6 +1431,7 @@ exports.tambahdatapresensi = function(req, res) {
     if (!lokasi) {
         return res.status(400).json({ error: "lokasi harus diunggah." });
     }
+
 
     connection.query('SELECT id_matakuliah FROM matakuliah WHERE kode_matakuliah = ?', [kode_matakuliah], function(error, resultkode, fields) {
         if (error) {

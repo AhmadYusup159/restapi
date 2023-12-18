@@ -1,13 +1,21 @@
 var express = require('express');
 var auth = require('./auth');
 var router = express.Router();
-var verifikasi= require('./verifikasi');
+var verifikasi = require('./verifikasi');
 var controller = require('../controller');
 const path = require('path');
-const { upload } = require('../uploadfotomahasiswa');
-const { uploadAdmin } = require('../uploadfotoadmin');
-const { uploadDosen } = require('../uploadfotodosen');
-const { uploadMakul } = require('../uploadfotomatakuliah');
+const {
+    upload
+} = require('../uploadfotomahasiswa');
+const {
+    uploadAdmin
+} = require('../uploadfotoadmin');
+const {
+    uploadDosen
+} = require('../uploadfotodosen');
+const {
+    uploadMakul
+} = require('../uploadfotomatakuliah');
 const origin = (req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
@@ -15,7 +23,7 @@ const origin = (req, res, next) => {
     next();
 };
 
-router.use('/', origin)
+router.use('/', origin)
 
 router.post('/api/v1/register', auth.registrasi);
 router.post('/api/v1/logindosen', auth.logindosen);
@@ -34,7 +42,7 @@ router.delete('/api/v1/hapusdatamahasiswa/:id', verifikasi([1]), controller.hapu
 // Admin
 router.get('/api/v1/admin', verifikasi([1]), controller.getalldataadmin);
 router.get('/api/v1/adminbyid/:id', verifikasi([1]), controller.getadminbyid);
-router.get('/api/v1/fotoadmin/:id',  verifikasi([1]),  controller.getfotoadminbyid);
+router.get('/api/v1/fotoadmin/:id', verifikasi([1]), controller.getfotoadminbyid);
 router.post('/api/v1/tambahdataadmin', verifikasi([1]), uploadAdmin.single('foto'), controller.tambahdataadmin);
 router.put('/api/v1/ubahdataadmin/:id', verifikasi([1]), uploadAdmin.single('foto'), controller.ubahdataadmin);
 router.delete('/api/v1/hapusdataadmin/:id', verifikasi([1]), controller.hapusdatamaadmin);
@@ -63,17 +71,18 @@ router.delete('/api/v1/hapusruangan/:id', verifikasi([1]), controller.hapusruang
 
 // Kelas
 router.get('/api/v1/kelas', verifikasi([1, 2, 3]), controller.getalldatakelas);
-router.get('/api/v1/kelasbyid/:id', verifikasi([1,2 ,3]), controller.getdatakelasbyid);
+router.get('/api/v1/kelasbyid/:id', verifikasi([1, 2, 3]), controller.getdatakelasbyid);
 router.post('/api/v1/tambahkelas', verifikasi([1]), controller.tambahdatakelas);
 router.put('/api/v1/ubahkelas/:id', verifikasi([1]), controller.ubahdatakelas);
 router.delete('/api/v1/hapuskelas/:id', verifikasi([1]), controller.hapuskelas);
 
 // Jadwal
 router.get('/api/v1/jadwal', verifikasi([1, 2, 3]), controller.getalldatajadwal);
-router.get('/api/v1/jadwalbyid/:id', verifikasi([1]), controller.getdatajadwalbyid);
+router.get('/api/v1/jadwalbyid/:id', verifikasi([1, 2]), controller.getdatajadwalbyid);
+router.get('/api/v1/jadwalbydosen', verifikasi([1, 2]), controller.getJadwalByIdDosen);
 router.get('/api/v1/jadwalmahasiswa', verifikasi([1]), controller.getalldatajadwalmahasiswa);
 router.get('/api/v1/jadwalmahasiswabyidmahasiswa/:id/:hari', verifikasi([1, 3]), controller.getdatajadwalmahasiswabyidmahasiswa);
-router.get('/api/v1/jadwalmatakuliah/:id', verifikasi([1,2]), controller.getdatajadwalmahasiswabyidmatakuliah);
+router.get('/api/v1/jadwalmatakuliah/:id', verifikasi([1, 2]), controller.getdatajadwalmahasiswabyidmatakuliah);
 router.post('/api/v1/tambahjadwal', verifikasi([1]), controller.tambahdatajadwal);
 router.put('/api/v1/ubahjadwal/:id', verifikasi([1]), controller.ubahdatajadwal);
 router.delete('/api/v1/hapusjadwal/:id', verifikasi([1]), controller.hapusjadwal);
@@ -84,7 +93,7 @@ router.get('/api/v1/presensibyid/:id', verifikasi([1]), controller.getpresensiby
 router.get('/api/v1/presensimahasiswa', verifikasi([1]), controller.getalldatapresensimahasiswa);
 router.get('/api/v1/presensibyidmahasiswa/:id', verifikasi([1, 3]), controller.getdatapresensimahasiswabyidmahasiswa);
 router.get('/api/v1/presensibyiddosen/:id', verifikasi([1, 3]), controller.getdatapresensimahasiswabyiddosen);
-router.post('/api/v1/tambahpresensi', verifikasi([1,3]), controller.tambahdatapresensi);
+router.post('/api/v1/tambahpresensi', verifikasi([1, 3]), controller.tambahdatapresensi);
 router.put('/api/v1/ubahpresensi/:id', verifikasi([1]), controller.ubahdatapresensi);
 router.delete('/api/v1/hapuspresensi/:id', verifikasi([1]), controller.hapuspresensi);
 router.get('/api/v1/presensimatakuliah/:id/:idmatakuliah', verifikasi([1, 3]), controller.getdatapresensimahasiswabyidmatakuliah);

@@ -93,7 +93,7 @@ router.get('/api/v1/presensibyid/:id', verifikasi([1]), controller.getpresensiby
 router.get('/api/v1/presensimahasiswa', verifikasi([1]), controller.getalldatapresensimahasiswa);
 router.get('/api/v1/presensibyidmahasiswa/:id', verifikasi([1, 3]), controller.getdatapresensimahasiswabyidmahasiswa);
 router.get('/api/v1/presensibyiddosen/:id', verifikasi([1, 3]), controller.getdatapresensimahasiswabyiddosen);
-router.post('/api/v1/tambahpresensi', verifikasi([1, 3]), controller.tambahdatapresensi);
+router.post('/api/v1/tambahpresensi/:id', verifikasi([1, 3]), controller.tambahdatapresensi);
 router.put('/api/v1/ubahpresensi/:id', verifikasi([1]), controller.ubahdatapresensi);
 router.delete('/api/v1/hapuspresensi/:id', verifikasi([1]), controller.hapuspresensi);
 router.get('/api/v1/presensimatakuliah/:id/:idmatakuliah', verifikasi([1, 3]), controller.getdatapresensimahasiswabyidmatakuliah);

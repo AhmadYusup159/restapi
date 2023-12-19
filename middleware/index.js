@@ -36,7 +36,7 @@ router.get('/api/v1/mahasiswa', verifikasi([1]), controller.getalldatamahasiswa)
 router.get('/api/v1/mahasiswabyid/:id', verifikasi([1, 3]), controller.getdatamahasiswabyid);
 router.get('/api/v1/fotomahasiswa/:id', verifikasi([1, 3]), controller.getfotomahasiswabyid);
 router.post('/api/v1/tambahmahasiswa', verifikasi([1]), upload.single('foto'), controller.tambahdatamahasiswa);
-router.put('/api/v1/ubahdatamahasiswa/:id', verifikasi([1]), upload.single('foto'), controller.ubahdatamahasiswa);
+router.put('/api/v1/ubahdatamahasiswa/:id_mahasiswa', verifikasi([1]), upload.single('foto'), controller.ubahdatamahasiswa);
 router.delete('/api/v1/hapusdatamahasiswa/:id', verifikasi([1]), controller.hapusdatamahasiswa);
 
 // Admin

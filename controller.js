@@ -167,6 +167,7 @@ exports.tambahdatamahasiswa = function(req, res){
         }
     });
 };
+
 exports.ubahdatamahasiswa = function (req, res) {
     let id_mahasiswa = req.params.id_mahasiswa;
     var npm = req.body.npm;
@@ -177,8 +178,10 @@ exports.ubahdatamahasiswa = function (req, res) {
     var status = req.body.status;
     var notlp = req.body.notlp;
     var email = req.body.email;
-    var password = req.body.password ? md5(req.body.password) : null;
-    
+    var passwordLama = req.body.passwordLama;
+    var passwordBaru = req.body.passwordBaru;
+    var konfirmasiPassword = req.body.konfirmasiPassword;
+
     if (!npm ) {
         return res.status(400).json({ error: "NPM harus diisi." });
     }
@@ -208,9 +211,7 @@ exports.ubahdatamahasiswa = function (req, res) {
     if (!emailRegex.test(email)) {
         return res.status(400).json({ error: "Format email tidak valid." });
     }     
-    if (!password) {
-        return res.status(400).json({ error: "Password harus diisi." });
-    }
+    
 
     if (!npm || npm.length !== 10) {
         return res.status(400).json({ error: "NPM harus terdiri dari 10 karakter." });
@@ -220,24 +221,58 @@ exports.ubahdatamahasiswa = function (req, res) {
         return res.status(400).json({ error: "Nama harus berupa string." });
     }
 
-    connection.query('SELECT * FROM mahasiswa WHERE npm = ?', [npm], function(error, result, fields){
+    if (!passwordLama) {
+        return res.status(400).json({ error: "Password lama harus diisi." });
+    }
+
+    // Validasi untuk password baru
+    if (passwordBaru !== konfirmasiPassword) {
+        return res.status(400).json({ error: "Password baru dan konfirmasi password tidak sesuai." });
+    }
+
+    
+    connection.query('SELECT password FROM mahasiswa WHERE id_mahasiswa = ?', [id_mahasiswa], function(error, result, fields){
         if (error) {
             console.log(error);
-            return res.status(500).json({ error: "Gagal memeriksa NPM di database." });
+            return res.status(500).json({ error: "Gagal memeriksa password lama di database." });
         }
 
-        if (result.length > 0) {
-            return res.status(400).json({ error: "NPM sudah terdaftar." });
-        } else {
-            connection.query('UPDATE mahasiswa SET npm=?, nama_mahasiswa=?, jk=?, alamat=?, foto=?, status=?, notlp=?, email=?, password=? WHERE id_mahasiswa=?', [npm, nama_mahasiswa, jk, alamat, foto, status, notlp,email, password, id_mahasiswa], function(error, rows, fields){
-                if(error){
-                    console.log(error);
-                    return res.status(500).json({ error: "Gagal mengubah data di database." });
-                } else {
-                    return res.status(200).json({ message: "Berhasil mengubah data." });
-                }
-            });
+        if (result.length === 0) {
+            return res.status(400).json({ error: "Data mahasiswa tidak ditemukan." });
         }
+
+        var passwordHashed = result[0].password;
+
+        // Check apakah password lama sesuai
+        if (md5(passwordLama) !== passwordHashed) {
+            return res.status(400).json({ error: "Password lama tidak sesuai." });
+        }
+
+        // Lanjut dengan proses perubahan password
+        var newPasswordHashed = md5(passwordBaru);
+        connection.query('UPDATE mahasiswa SET npm=?, nama_mahasiswa=?, jk=?, alamat=?, foto=?, status=?, notlp=?, email=?, password=? WHERE id_mahasiswa=?', [npm, nama_mahasiswa, jk, alamat, foto, status, notlp, email, newPasswordHashed, id_mahasiswa], function(error, rows, fields){
+            if(error){
+                console.log(error);
+                return res.status(500).json({ error: "Gagal mengubah data di database." });
+            } else {
+                var userData = {
+                    username: nama_mahasiswa,
+                    email: email,
+                    password: newPasswordHashed,
+                    role: 3, 
+                    tgl_daftar: new Date()
+                };
+
+                connection.query('UPDATE alluser SET ? WHERE email = ?', [userData, email], function(error, rows, fields){
+                    if(error){
+                        console.log(error);
+                        return res.status(500).json({ error: "Gagal mengubah data di tabel alluser." });
+                    } else {
+                        return res.status(200).json({ message: "Berhasil mengubah data." });
+                    }
+                });
+            }
+        });
     });
 };
 exports.hapusdatamahasiswa = function (req, res) {
